@@ -1,0 +1,180 @@
+<style>
+body { margin: 0; }
+div { padding: 5px;}
+h1 { text-align: center; }
+.one { background-image: url('background.jpeg'); color: white;}
+.two { padding: 10px;}
+th, td {padding: 5px;}
+</style>
+
+<html>
+<head>
+<title> Algorithm Visualizer </title>
+<link rel="icon" type="image/x-icon" href="C:\Users\Nitya\Desktop\Project\DAA\Website\icon1.jpeg">
+</head>
+<body>
+<div class="one">
+<h1 align="CENTER" style="font-size:280%"> Searching Algorithms </h1>
+</div>
+
+<p align="CENTER" style="font-size:120%">
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\home.html"> Home | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\sort.html"> Sorting Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\graph.html"> Graph Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\greedy.html"> Greedy Algorithms </a>
+</p>
+<hr>
+
+<div class="two">
+<h3>
+<b> What are Searching Algorithms? </b>
+</h3>
+<p align="JUSTIFY">
+Searching algorithms are essential methods used to retrieve specific information from a dataset. They are a fundamental part of computer science, enabling efficient access to data structures such as arrays, lists, or databases. These algorithms are critical for solving real-world problems, including data analysis, pattern recognition, and database operations
+</p>
+
+<h3> Types of Searching Algorithms: </h3>
+<p align="JUSTIFY">
+<ul> 
+<li> Linear Search </li>
+<li> Binary Search </li>
+<li> Jump Search </li>
+</ul>
+</p>
+
+<h3>
+<b> What are Searching Algorithms? </b>
+</h3>
+<p align="JUSTIFY">
+Searching algorithms are essential methods used to retrieve specific information from a dataset. They are a fundamental part of computer science, enabling efficient access to data structures such as arrays, lists, or databases. These algorithms are critical for solving real-world problems, including data analysis, pattern recognition, and database operations.
+</p>
+
+<h3>
+<b> Linear Search: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Linear search is the simplest form of searching. It traverses the dataset sequentially, examining each element until the desired value is found or the entire dataset has been checked.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Best Case: O[1] </li>
+<li> Worst/Average Case: O[n] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[1]
+</li>
+<li>
+<b> Used for: </b>Small, unsorted datasets where simplicity outweighs efficiency.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Binary Search: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Binary search is an efficient algorithm for sorted datasets, reducing the search space by half with each iteration.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Best Case: O[1] </li>
+<li> Worst/Average Case: O[logn] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[1] (iterative) and O[logn] (recursive)
+</li>
+<li>
+<b> Used for: </b>Large, sorted datasets for fast lookup.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Jump Search: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Jump search is an interval-based search designed for sorted datasets. It jumps ahead by fixed intervals and performs a linear search in the relevant block.
+</li>
+<li>
+<b> Time Complexity: </b>O[√n]
+</li>
+<li>
+<b> Space Complexity: </b>O[1]
+</li>
+<li>
+<b> Used for: </b>Sorted datasets stored sequentially.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Linear Search v/s Binary Search v/s Jump Search: </b>
+</h3>
+<p align="JUSTIFY">
+<table border="1">
+<tr align="CENTER">
+<th> Algorithm </th>
+<th> Best Case Time </th>
+<th> Worst Case Time </th>
+<th> Space Complexity </th>
+<th> Suitable Dataset </th>
+<th> Sorted Input Required </th>
+</tr>
+<tr align="CENTER">
+<th> Linear Search </th>
+<td> O[1] </td>
+<td> O[n] </td>
+<td> O[1] </td>
+<td> Unsorted/Small Datasets </td>
+<td> No </td>
+</tr>
+<tr align="CENTER">
+<th> Binary Search </th>
+<td> O[1] </td>
+<td> O[logn] </td>
+<td> O[1] </td>
+<td> Sorted/Large Datasets </td>
+<td> Yes </td>
+</tr>
+<tr align="CENTER">
+<th> Jump Search </th>
+<td> O[1] </td>
+<td> O[√n] </td>
+<td> O[1] </td>
+<td> Sorted/Sequential Datasets </td>
+<td> Yes </td>
+</tr>
+</table>
+</p>
+
+<h3>
+<b> Applications of Searching Algorithms: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Linear Search:</b> Used in scenarios where datasets are small or unsorted, such as searching for a key in a list of random items.
+</li>
+<li>
+<b>Binary Search:</b> Ideal for large, sorted datasets such as arrays, dictionaries, or databases.
+</li>
+<li>
+<b>Jump Search:</b> Efficient for sequential data, such as searching elements in a linked list.
+</li>
+</ul>
+</p>
+<br>
+
+</div>
+</body>
+</html>

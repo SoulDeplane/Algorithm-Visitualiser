@@ -1,0 +1,283 @@
+<style>
+body { margin: 0; }
+div { padding: 5px;}
+h1 { text-align: center; }
+.one { background-image: url('background.jpeg'); color: white;}
+.two { padding: 10px;}
+</style>
+<html>
+<head>
+<title> Algorithm Visualizer </title>
+<link rel="icon" type="image/x-icon" href="C:\Users\Nitya\Desktop\Project\DAA\Website\icon1.jpeg">
+</head>
+<body>
+<div class="one">
+<h1 align="CENTER" style="font-size:280%"> Graph Algorithms </h1>
+</div>
+
+<p align="CENTER" style="font-size:120%">
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\home.html"> Home | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\search.html"> Searching Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\sort.html"> Sorting Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\greedy.html"> Greedy Algorithms </a>
+</p>
+<hr>
+
+<div class="two">
+<h3>
+<b> What are Graph Algorithms? </b>
+</h3>
+<p align="JUSTIFY">
+Graph algorithms are essential computational techniques designed to process and analyze graphs, which consist of vertices (nodes) and edges (connections). These algorithms are widely used in solving real-world problems such as network routing, social network analysis, and dependency resolution.
+</p>
+
+<h3> Types of Searching Algorithms: </h3>
+<p align="JUSTIFY">
+<ul> 
+<li> Breadth-First Search (BFS) </li>
+<li> Depth-First Search (DFS) </li>
+<li> Disjoint Set Data Structure </li>
+<li> Kruskal's Agorithm </li>
+<li> Prim's Algorithm </li>
+<li> Dijkstra's Algorithm </li>
+<li> Bellman-Ford Algorithm </li>
+<li> Floyd-Warshall Algorithm </li>
+</ul>
+</p>
+
+<h3>
+<b> Breadth-First Search (BFS): </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> BFS is a traversal algorithm that explores a graph layer by layer, visiting all neighbors of a node before moving to the next level.
+</li>
+<li>
+<b> Time Complexity: </b>O[V+E] (V=vertices, E=edges)
+</li>
+<li>
+<b> Space Complexity: </b>O[V] (For the queue and visited list)
+</li>
+<li>
+<b> Used for: </b>Finding the shortest path in an unweighted graph, peer-to-peer networks, and social network analysis.
+</ul>
+</p>
+
+<h3>
+<b> Depth-First Search (DFS): </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> DFS is a traversal algorithm that explores as far along a branch as possible before backtracking to explore the next branch.
+</li>
+<li>
+<b> Time Complexity: </b>O[V+E] (V=vertices, E=edges)
+</li>
+<li>
+<b> Space Complexity: </b>O[V] (For recursion stack and visited list)
+</li>
+<li>
+<b> Used for: </b>Detecting cycles, topological sorting, and solving maze-like puzzles.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Disjoint Set Data Structure: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> The Disjoint Set (or Union-Find) is a data structure that keeps track of a partitioned set of elements to efficiently determine if two elements belong to the same set.
+</li>
+<li>
+<b> Time Complexity: </b>O[α(n)] per operation (α = inverse Ackermann function, very small for practical inputs)
+</li>
+<li>
+<b> Space Complexity: </b>O[n]
+</li>
+<li>
+<b> Used for: </b>Detecting cycles in undirected graphs, Kruskal’s Algorithm, and network connectivity.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Kruskal's Algorithm: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b>  Kruskal’s Algorithm finds the minimum spanning tree (MST) of a graph by sorting edges by weight and adding them to the MST in non-decreasing order while avoiding cycles.
+</li>
+<li>
+<b> Time Complexity: </b>O[ElogE]
+</li>
+<li>
+<b> Space Complexity: </b>O[V+E]
+</li>
+<li>
+<b> Used for: </b>Constructing MSTs in sparse graphs.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Prim's Algorithm: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Prim’s Algorithm finds the MST by starting with an arbitrary node and repeatedly adding the smallest edge that connects a vertex in the tree to one outside the tree.
+</li>
+<li>
+<b> Time Complexity: </b>O[E+VlogV] (with priority queue)
+</li>
+<li>
+<b> Space Complexity: </b>O[V+E]
+</li>
+<li>
+<b> Used for: </b>MST construction, particularly in dense graphs.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Dijkstra's Algorithm: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Dijkstra’s Algorithm finds the shortest path from a source node to all other nodes in a weighted graph with non-negative weights.
+</li>
+<li>
+<b> Time Complexity: </b>O[E+VlogV] (with priority queue)
+</li>
+<li>
+<b> Space Complexity: </b>O[V]
+</li>
+<li>
+<b> Used for: </b>Network routing and solving shortest-path problems.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Bellman-Ford Algorithm: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Bellman-Ford finds the shortest path from a single source node to all other nodes, accommodating graphs with negative weight edges.
+</li>
+<li>
+<b> Time Complexity: </b>O[VE]
+</li>
+<li>
+<b> Space Complexity: </b>O[V]
+</li>
+<li>
+<b> Used for: </b>Solving shortest-path problems with negative weights, detecting negative weight cycles.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Floyd-Warshall Algorithm: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Floyd-Warshall computes shortest paths between all pairs of vertices using dynamic programming.
+</li>
+<li>
+<b> Time Complexity: </b>O[V<sup>2</sup>]
+</li>
+<li>
+<b> Space Complexity: </b>O[V<sup>2</sup>]
+</li>
+<li>
+<b> Used for: </b>Finding shortest paths in dense graphs and weighted adjacency matrices.
+</ul>
+</p>
+
+<h3>
+<b> Comparision Table: </b>
+</h3>
+<p align="JUSTIFY">
+<table border="1">
+<tr align="CENTER">
+<th> Algorithm </th>
+<th> Time Complexity </th>
+<th> Space Complexity </th>
+<th> Suitable For </th>
+<th> Handle Negative Weights </th>
+</tr>
+<tr align="CENTER">
+<th> Breadth-First Search (BFS) </th>
+<td> O[V+E] </td>
+<td> O[V] </td>
+<td> Unweighted shortest path traversal </td>
+<td> No </td>
+</tr>
+<tr align="CENTER">
+<th> Depth-First Search (DFS) </th>
+<td> O[V+E] </td>
+<td> O[V] </td>
+<td> Cycle detection, topological sorting </td>
+<td> No </td>
+</tr>
+<tr align="CENTER">
+<th> Disjoingt Set (Union-Find) </th>
+<td> O[α(n)] per operation </td>
+<td> O[n] </td>
+<td> Cycle detection, topological sorting </td>
+<td> No </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Kruskal's Algorithm </th>
+<td> O[ElogE] </td>
+<td> O[V+E] </td>
+<td> Minimum spanning tree for sparse graphs </td>
+<td> No </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Prim's Algorithm </th>
+<td> O[E+VlogV] </td>
+<td> O[V+E] </td>
+<td> Minimum spanning tree for dense graphs </td>
+<td> No </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Dijkstra's Algorithm </th>
+<td> O[E+VlogV] </td>
+<td> O[V] </td>
+<td> Shortest paths with non-negative weights </td>
+<td> No </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Bellman-Ford Algorithm </th>
+<td> O[VE] </td>
+<td> O[V] </td>
+<td> Shortest paths and negative weight detection </td>
+<td> Yes </td>
+</tr>
+<tr align="CENTER">
+<th> Floyd-Warshall Algorithm </th>
+<td> O[V<sup>2</sup>] </td>
+<td> O[V<sup>2</sup>] </td>
+<td> All-pair shortest paths for dense graphs </td>
+<td> Yes </td>
+</tr>
+</table>
+</p>
+
+</div>
+</body>
+</html>

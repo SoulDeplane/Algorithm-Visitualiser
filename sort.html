@@ -1,0 +1,299 @@
+<style>
+body { margin: 0; }
+div { padding: 5px;}
+h1 { text-align: center; }
+.one { background-image: url('background.jpeg'); color: white;}
+.two { padding: 10px;}
+</style>
+<html>
+<head>
+<title> Algorithm Visualizer </title>
+<link rel="icon" type="image/x-icon" href="C:\Users\Nitya\Desktop\Project\DAA\Website\icon1.jpeg">
+</head>
+<body>
+<div class="one">
+<h1 align="CENTER" style="font-size:280%"> Sorting Algorithms </h1>
+</div>
+
+<p align="CENTER" style="font-size:120%">
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\home.html"> Home | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\search.html"> Searching Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\graph.html"> Graph Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\greedy.html"> Greedy Algorithms </a>
+</p>
+<hr>
+
+<div class="two">
+<h3>
+<b> What are Sorting Algorithms? </b>
+</h3>
+<p align="JUSTIFY">
+Sorting algorithms are fundamental to computer science and are used to arrange elements in a particular order (ascending or descending). These algorithms play a crucial role in optimizing data structures for search operations, enhancing data visualization, and simplifying complex tasks such as merging and processing large datasets.
+</p>
+
+<h3> Types of Searching Algorithms: </h3>
+<p align="JUSTIFY">
+<ul> 
+<li> Bubble Sort </li>
+<li> Selection Sort </li>
+<li> Insertion Sort </li>
+<li> Merge Sort </li>
+<li> Quick Sort </li>
+<li> Heap Sort </li>
+<li> Count Sort </li>
+</ul>
+</p>
+
+<h3>
+<b> Bubble Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Bubble Sort is a simple comparison-based algorithm. It repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The process continues until the list is sorted.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Best Case: O[n] </li>
+<li> Worst/Average Case: O[n<sup>2</sup>] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[1] (in-place)
+</li>
+<li>
+<b> Used for: </b>Useful for small datasets or when simplicity is more important than efficiency.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Selection Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Selection Sort divides the list into two parts: sorted and unsorted. It repeatedly selects the smallest (or largest) element from the unsorted part and places it in the correct position within the sorted portion.
+</li>
+<li>
+<b> Time Complexity: </b>O[n<sup>2</sup>]
+</li>
+<li>
+<b> Space Complexity: </b>O[1]
+</li>
+<li>
+<b> Used for: </b>Suitable for datasets where memory usage is a concern.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Insertion Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Insertion Sort builds the sorted list one element at a time. It takes an element from the unsorted portion and places it at the correct position within the sorted portion.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Best Case: O[n] </li>
+<li> Worst/Average Case: O[n<sup>2</sup>] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[1]
+</li>
+<li>
+<b> Used for: </b>Ideal for small datasets or nearly sorted data.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Merge Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Merge Sort is a divide-and-conquer algorithm. It recursively splits the dataset into halves, sorts each half, and merges them back together.
+</li>
+<li>
+<b> Time Complexity: </b>O[nlogn]
+</li>
+<li>
+<b> Space Complexity: </b>O[n] (additional memory required for merging)
+</li>
+<li>
+<b> Used for: </b>Effective for large datasets and linked lists.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Quick Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Quick Sort is a highly efficient divide-and-conquer algorithm. It selects a "pivot" element and partitions the dataset into two sub-lists based on their relation to the pivot, recursively sorting them.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Best/Average Case: O[nlogn] </li>
+<li> Worst Case: O[n<sup>2</sup>] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[logn] (due to recursion)
+</li>
+<li>
+<b> Used for: </b>Best suited for datasets requiring efficient performance.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Heap Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Heap Sort converts the list into a binary heap structure and repeatedly removes the maximum or minimum element, placing it at the end of the list.
+</li>
+<li>
+<b> Time Complexity: </b>O[nlogn]
+</li>
+<li>
+<b> Space Complexity: </b>O[1]
+</li>
+<li>
+<b> Used for: </b>Useful for datasets when memory is a critical factor.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Count Sort: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Counting Sort is a non-comparison algorithm. It works by counting the occurrences of each unique element and using this information to place elements in the correct order.
+</li>
+<li>
+<b> Time Complexity: </b>O[n+k] (k is range of input values)
+</li>
+<li>
+<b> Space Complexity: </b>O[n+k]
+</li>
+<li>
+<b> Used for: </b>Suitable for integer datasets with a limited range of values.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Comparision Table: </b>
+</h3>
+<p align="JUSTIFY">
+<table border="1">
+<tr align="CENTER">
+<th> Algorithm </th>
+<th> Time Complexity </th>
+<th> Space Complexity </th>
+<th> Stable </th>
+<th> In-place </th>
+</tr>
+<tr align="CENTER">
+<th> Bubble Sort </th>
+<td> O[n<sup>2</sup>] </td>
+<td> O[1] </td>
+<td> Yes </td>
+<td> Yes </td>
+</tr>
+<tr align="CENTER">
+<th> Selection Sort </th>
+<td> O[n<sup>2</sup>] </td>
+<td> O[1] </td>
+<td> No </td>
+<td> Yes </td>
+</tr>
+<tr align="CENTER">
+<th> Insertion Sort </th>
+<td> O[n<sup>2</sup>] </td>
+<td> O[1] </td>
+<td> Yes </td>
+<td> Yes </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Merge Sort </th>
+<td> O[nlogn] </td>
+<td> O[n] </td>
+<td> Yes </td>
+<td> No </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Quick Sort </th>
+<td> O[nlogn] </td>
+<td> O[logn] </td>
+<td> No </td>
+<td> Yes </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Heap Sort </th>
+<td> O[nlogn] </td>
+<td> O[1] </td>
+<td> No </td>
+<td> Yes </td>
+</tr>
+</tr>
+<tr align="CENTER">
+<th> Count Sort </th>
+<td> O[n+k] </td>
+<td> O[n+k] </td>
+<td> Yes </td>
+<td> No </td>
+</tr>
+</table>
+</p>
+
+<h3>
+<b> Applications of Sorting Algorithms: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Bubble Sort:</b> Educational purposes to teach basic sorting.
+</li>
+<li>
+<b>Selection Sort:</b> Suitable when memory is limited.
+</li>
+<li>
+<b>Insertion Sort:</b> Ideal for small or nearly sorted datasets.
+</li>
+<li>
+<b>Merge Sort:</b> Handling large datasets or linked lists.
+</li>
+<li>
+<b>Quick Sort:</b> Fast for general-purpose sorting.
+</li>
+<li>
+<b>Heap Sort:</b> Sorting in memory-constrained environments.
+</li>
+<li>
+<b>Counting Sort:</b> Sorting integers or objects with small ranges.
+</li>
+</ul>
+</p>
+<br>
+
+</div>
+</body>
+</html>

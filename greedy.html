@@ -1,0 +1,199 @@
+<style>
+body { margin: 0; }
+div { padding: 5px;}
+h1 { text-align: center; }
+.one { background-image: url('background.jpeg'); color: white;}
+.two { padding: 10px;}
+</style>
+<html>
+<head>
+<title> Algorithm Visualizer </title>
+<link rel="icon" type="image/x-icon" href="C:\Users\Nitya\Desktop\Project\DAA\Website\icon1.jpeg">
+</head>
+<body>
+<div class="one">
+<h1 align="CENTER" style="font-size:280%"> Greedy Agorithms </h1>
+</div>
+
+<p align="CENTER" style="font-size:120%">
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\home.html"> Home | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\search.html"> Searching Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\sort.html"> Sorting Algorithms | </a>
+<a href="C:\Users\Nitya\Desktop\Project\DAA\Website\graph.html"> Graph Algorithms </a>
+</p>
+<hr>
+
+<div class="two">
+<h3>
+<b> What are Greedy Algorithms? </b>
+</h3>
+<p align="JUSTIFY">
+Greedy algorithms are fundamental to computer science and are used to solve optimization problems by making a sequence of choices, each of which looks the best at the moment. These algorithms work by selecting the locally optimal option with the hope of finding a global optimum. Greedy strategies are efficient and simple, making them ideal for a variety of applications such as scheduling, compression, and resource allocation.
+</p>
+
+<h3> Types of Searching Algorithms: </h3>
+<p align="JUSTIFY">
+<ul> 
+<li> Activity Selection </li>
+<li> Job Sequencing </li>
+<li> Huffman Coding </li>
+<li> Fractional Knapsack </li>
+</ul>
+</p>
+
+<h3>
+<b> Activity Selection: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Activity Selection is an algorithm used to choose the maximum number of activities that do not overlap, given their start and finish times. The strategy involves first sorting the activities based on their finish times and then iteratively choosing the next activity that starts after the current one finishes.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Sorting: O[nlogn] </li>
+<li> Selection: O[n] </li>
+<li> Overall: O[nlogn] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[1] (in-place, aside from the input list)
+</li>
+<li>
+<b> Used for: </b>Scheduling problems where the goal is to maximize the number of non-overlapping tasks.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Job Sequencing: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Job Sequencing involves scheduling jobs to maximize total profit when each job also has a deadline. The greedy approach typically involves sorting jobs in decreasing order of profit and then assigning each job to the latest available time slot before its deadline.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Sorting: O[nlogn] </li>
+<li> Scheduling: Can go up to O(n²) in the worst case, though optimized methods can lower the constant factors. </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[n]
+</li>
+<li>
+<b> Used for: </b>Scheduling with deadlines, particularly in cases where each job carries an associated profit, and the objective is to maximize total profit.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Huffman Coding: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> Huffman Coding is a method used for lossless data compression. It constructs an optimal prefix code for symbols based on their frequencies. The process involves building a binary tree with a min-heap (or priority queue) where the two lowest frequency nodes are repeatedly combined until a complete code-tree is formed.
+</li>
+<li>
+<b> Time Complexity: </b>O[nlogn] (where n is the number of unique symbols)
+</li>
+<li>
+<b> Space Complexity: </b>O[n]
+</li>
+<li>
+<b> Used for: </b>Efficient data compression in various applications, such as file compression formats like ZIP and image compression standards.
+</li>
+</ul>
+</p>
+
+<h3>
+<b> Fractional Knapsack: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Description:</b> The Fractional Knapsack Problem is an optimization problem where items can be divided into smaller parts. The algorithm maximizes the total value in the knapsack by first calculating the value-to-weight ratio for each item, sorting items based on this ratio, and then greedily filling the knapsack with the best available fractions of items until the capacity is reached.
+</li>
+<li>
+<b> Time Complexity: </b>
+<ul>
+<li> Sorting: O[nlogn] </li>
+<li> Selection: O[n] </li>
+<li> Overall: O[nlogn] </li>
+</ul>
+</li>
+<li>
+<b> Space Complexity: </b>O[n]
+</li>
+<li>
+<b> Used for: </b>Optimization scenarios such as resource allocation, where items (or resources) can be partially taken to maximize overall profit or value.
+</li>
+</ul>
+</p>
+
+
+<h3>
+<b> Comparision Table: </b>
+</h3>
+<p align="JUSTIFY">
+<table border="1">
+<tr align="CENTER">
+<th> Algorithm </th>
+<th> Time Complexity </th>
+<th> Space Complexity </th>
+<th> Used For </th>
+</tr>
+<tr align="CENTER">
+<th> Activity Selection </th>
+<td> O[nlogn] </td>
+<td> O[1] </td>
+<td> Scheduling non-overlapping activities </td>
+</tr>
+<tr align="CENTER">
+<th> Job Scheduling </th>
+<td> O(n log n) average, O(n²) worst </td>
+<td> O[n] </td>
+<td> Scheduling jobs with deadlines to maximize profit </td>
+</tr>
+<tr align="CENTER">
+<th> Huffman Coding </th>
+<td> O[nlogn] </td>
+<td> O[n] </td>
+<td> Efficient lossless data compression </td>
+</tr>
+<tr align="CENTER">
+<th> Fractional Knapsack </th>
+<td> O[nlogn] </td>
+<td> O[n] </td>
+<td> Optimization with divisible items </td>
+</tr>
+</table>
+</p>
+
+<h3>
+<b> Applications of Greedy Algorithms: </b>
+</h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b>Activity Selection:</b> Used in scheduling problems such as planning meetings or events, where maximizing the number of tasks without conflicts is key.
+</li>
+<li>
+<b>Job Sequencing:</b> Applied in systems where jobs must be scheduled under timing constraints to maximize profit or efficiency, such as in manufacturing or project management.
+</li>
+<li>
+<b>Huffman Coding:</b> Forms the basis for many file compression algorithms by reducing redundancy in data storage.
+</li>
+<li>
+<b>Fractional Knapsack:</b> Commonly used in resource allocation problems, financial modelling, and scenarios where partial resources can be utilized for optimal gain.
+</li>
+</ul>
+</p>
+
+</div>
+</body>
+</html>

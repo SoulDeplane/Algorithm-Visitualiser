@@ -1,10 +1,45 @@
 <style>
 body { margin: 0; }
-div { padding: 5px;}
+div { padding: 5px; }
 h1 { text-align: center; }
-.one { background-image: url('background.jpeg'); color: white;}
-.two { padding: 10px;}
-th, td {padding: 5px;}
+.one { background-image: url('background.jpeg'); color: white; }
+.two { padding: 10px; }
+th, td { padding: 5px; }
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 20px;
+  background-color: #111;
+}
+.sidenav a {
+  padding: 15px 25px;
+  text-decoration: none;
+  font-size: 22px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.sidenav .closebtn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+@media screen and (max-height: 450px) {
+  .sidenav { padding-top: 15px; }
+  .sidenav a { font-size: 18px; }
+}
 </style>
 
 <html>
@@ -13,11 +48,19 @@ th, td {padding: 5px;}
 <link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search/lsearch.html">Linear Search</a>
+  <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search/bsearch.html">Binary Search</a>
+  <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search/jsearch.html">Jump Search</a>
+</div>
+
 <div class="one">
 <h1 align="CENTER" style="font-size:280%"> Searching Algorithms </h1>
 </div>
 
 <p align="CENTER" style="font-size:120%">
+<span style="font-size:18px; cursor:pointer" onclick="openNav()">&#9776;  </span>
 <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/home.html"> Home | </a>
 <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/sort.html"> Sorting Algorithms | </a>
 <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph.html"> Graph Algorithms | </a>
@@ -143,7 +186,7 @@ Searching algorithms are essential methods used to retrieve specific information
 <th> Jump Search </th>
 <td> O[1] </td>
 <td> O[√n] </td>
-<td> O[1] </td>w
+<td> O[1] </td>
 <td> Sorted/Sequential Datasets </td>
 <td> Yes </td>
 </tr>
@@ -167,6 +210,13 @@ Searching algorithms are essential methods used to retrieve specific information
 </ul>
 </p>
 
+<script>
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";}
+</script>
 </div>
 </body>
 </html>

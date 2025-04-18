@@ -1,0 +1,133 @@
+<style>
+body { margin: 0; }
+div { padding: 5px; }
+h1 { text-align: center; }
+.one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
+.two { padding: 10px; }
+th, td { padding: 5px; }
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 20px;
+  background-color: #111;
+white-space: nowrap;
+}
+.sidenav a {
+  padding: 15px 25px;
+  text-decoration: none;
+  font-size: 22px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.sidenav .closebtn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+@media screen and (max-height: 450px) {
+  .sidenav { padding-top: 15px; }
+  .sidenav a { font-size: 18px; }
+}
+</style>
+
+<html>
+<head>
+<title> Algorithm Visualizer </title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+</head>
+<body>
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/bfs.html">Breadth-First Search (BFS)</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/dfs.html">Depth-First Search (DFS)</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/disjoint.html">Disjoint Set Data Structure</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/kruskal.html">Kruskal's Algorithm</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/prim.html">Prim's Algorithm</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/dijkstra.html">Dijkstra's Algorithm</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/bellman.html">Bellman-Ford Algorithm</a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph/floyd.html">Floyd-Warshall Algorithm</a>
+</div>
+
+<div class="one">
+<h1 align="CENTER" style="font-size:280%"> Bellman-Ford Algorithm </h1>
+</div>
+
+<p align="CENTER" style="font-size:120%">
+<span style="font-size:18px; cursor:pointer" onclick="openNav()">&#9776;  </span>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/home.html"> Home | </a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search.html"> Searching Algorithms | </a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/sort.html"> Sorting Algorithms | </a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph.html"> Graph Algorithms | </a>
+<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/greedy.html"> Greedy Algorithms </a>
+</p>
+<hr>
+
+<div class="two">
+<h3><b> Description: </b></h3>
+<p align="JUSTIFY">
+Bellman-Ford finds shortest paths even in graphs with negative weight edges using iterative edge relaxation.
+</p>
+
+<h3><b> Visual Representation: </b></h3>
+
+<h3><b> Code Implementation: </b></h3>
+
+<h3><b> Time Complexity: </b></h3>
+<p align="JUSTIFY">
+<ul>
+<li><b> Best Case:</b> O[VE] </li>
+<li><b> Worst Case:</b> O[VE] </li>
+<li><b> Average Case:</b> O[VE] </li>
+</ul>
+</p>
+
+<h3><b> Space Complexity: </b></h3>
+<p align="JUSTIFY">
+<ul>
+<li> O[V] </li>
+</ul>
+</p>
+
+<h3><b> Used for: </b></h3>
+<p align="JUSTIFY">
+<ul>
+<li> Handling graphs with negative weights and detecting negative cycles. </li>
+</ul>
+</p>
+
+<h3><b> Applications: </b></h3>
+<p align="JUSTIFY">
+<ul>
+<li>
+<b> Currency Exchange Optimization: </b>Detecting arbitrage opportunities.
+</li>
+<li>
+<b> Transportation Cost Minimization: </b>Finding cheapest routes. 
+</li>
+</ul>
+</p>
+
+<script>
+function openNav() {
+  document.getElementById("mySidenav").style.width = "350px";}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";}
+</script>
+
+</div>
+</body>
+</html>

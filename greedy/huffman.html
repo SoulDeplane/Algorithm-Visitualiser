@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,7 +22,6 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -40,12 +45,36 @@ th, td { padding: 5px; }
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 400px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -78,7 +107,122 @@ A lossless compression algorithm that assigns shorter binary codes to frequently
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;queue&gt;
+#include&lt;vector&gt;
+using namespace std;
+struct Node
+{
+    	char data;
+    	int freq;
+    	Node* left;
+    	Node* right;
+    	Node(char d, int f)
+	{
+        	data = d;
+        	freq = f;
+        	left = right = nullptr;
+    	}
+};
 
+struct Compare
+{
+    	bool operator()(Node* a, Node* b)
+	{
+    	    	return a->freq > b->freq;
+    	}
+};
+
+void printCodes(Node* root, string code)
+{
+    	if (!root)
+		return;
+    	if (root->data != '*') 
+        	cout << root->data << ": " << code << endl;
+    	printCodes(root->left, code + "0");
+    	printCodes(root->right, code + "1");
+}
+
+void huffmanCoding(vector<pair<char, int>>& freq)
+{
+    	priority_queue<Node*, vector<Node*>, Compare> pq;
+    	for (auto& f : freq) 
+    	    	pq.push(new Node(f.first, f.second));
+    	while (pq.size() > 1)
+	{
+    	    	Node* left = pq.top(); pq.pop();
+    	    	Node* right = pq.top(); pq.pop();
+    	    	Node* newNode = new Node('*', left->freq + right->freq);
+    	    	newNode->left = left;
+    	    	newNode->right = right;
+    	    	pq.push(newNode);
+    	}
+    	cout << "Huffman Codes:\n";
+    	printCodes(pq.top(), "");
+}
+
+main()
+{
+   	int n;
+    	cout << "Enter number of characters: ";
+    	cin >> n;
+    	vector<pair<char, int>> freq(n);
+    	cout << "Enter characters and their frequencies:\n";
+    	for (int i = 0; i < n; i++)
+    	    	cin >> freq[i].first >> freq[i].second;
+    	huffmanCoding(freq);
+    	return 0;
+}           
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+import heapq
+
+class Node:
+    	def __init__(self, data, freq):
+        	self.data = data
+        	self.freq = freq
+        	self.left = self.right = None
+
+    	def __lt__(self, other):
+        	return self.freq < other.freq
+
+def build_huffman_tree(freq):
+    	heap = [Node(data, f) for data, f in freq]
+    	heapq.heapify(heap)
+    	while len(heap) > 1:
+    	    	left = heapq.heappop(heap)
+    	    	right = heapq.heappop(heap)
+        	new_node = Node('*', left.freq + right.freq)
+        	new_node.left, new_node.right = left, right
+        	heapq.heappush(heap, new_node)
+    	return heap[0]
+
+def generate_codes(root, code=""):
+    	if root:
+    	    	if root.data != '*':
+    	    	    	print(f"{root.data}: {code}")
+    	    	generate_codes(root.left, code + "0")
+    	    	generate_codes(root.right, code + "1")
+
+freq = eval(input("Enter list of (character, frequency) tuples: "))
+huffman_root = build_huffman_tree(freq)
+print("Huffman Codes:")
+generate_codes(huffman_root)
+            </code></pre>
+        </div>
+    </div>
+</div>
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
 <ul>
@@ -114,10 +258,30 @@ A lossless compression algorithm that assigns shorter binary codes to frequently
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";}
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

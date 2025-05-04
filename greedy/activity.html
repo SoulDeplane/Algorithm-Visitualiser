@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,7 +22,6 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -40,12 +45,36 @@ th, td { padding: 5px; }
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 400px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -78,6 +107,77 @@ Given a set of activities with start and finish times, the goal is to select the
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;algorithm&gt;
+using namespace std;
+struct Activity
+{
+    	int start, end;
+};
+
+bool compare(Activity a1, Activity a2)
+{
+    	return a1.end < a2.end;
+}
+
+void activitySelection(Activity arr[], int n)
+{
+    	sort(arr, arr + n, compare);
+    	cout << "Selected Activities: \n";
+    	int lastEnd = arr[0].end;
+    	cout << "(" << arr[0].start << ", " << arr[0].end << ") ";
+    	for (int i = 1; i < n; i++)
+	{
+    	    	if (arr[i].start >= lastEnd)
+		{
+    	    	    	cout << "(" << arr[i].start << ", " << arr[i].end << ") ";
+    	    	    	lastEnd = arr[i].end;
+    	    	}
+    	}
+    	cout << endl;
+}
+
+main()
+{
+    	int n;
+    	cout << "Enter number of activities: ";
+    	cin >> n;
+    	Activity arr[n];
+    	cout << "Enter start and end time of activities:\n";
+    	for (int i = 0; i < n; i++) 
+        	cin >> arr[i].start >> arr[i].end;
+    	activitySelection(arr, n);
+    	return 0;
+}            
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def activity_selection(activities):
+    	activities.sort(key=lambda x: x[1])  
+    	selected = [activities[0]]  
+    	last_end = activities[0][1]
+    	for i in range(1, len(activities)):
+    	    	if activities[i][0] >= last_end:
+    	    	    	selected.append(activities[i])
+    	    	    	last_end = activities[i][1]
+    	print("Selected Activities:", selected)
+
+activities = eval(input("Enter list of (start, end) tuples: "))
+activity_selection(activities)
+            </code></pre>
+        </div>
+    </div>
+</div>
 
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
@@ -114,10 +214,30 @@ Given a set of activities with start and finish times, the goal is to select the
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";}
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

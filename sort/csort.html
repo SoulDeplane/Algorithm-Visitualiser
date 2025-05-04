@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,7 +22,6 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -40,14 +45,39 @@ th, td { padding: 5px; }
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 400px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
+
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/sort/bsort.html">Bubble Sort</a>
@@ -81,7 +111,77 @@ Counting Sort is a non-comparative sorting algorithm that counts occurrences of 
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+using namespace std;
+void csort(int arr[], int n)
+{
+    	int m = arr[0];
+    	for (int i = 1; i < n; i++)
+	{
+        	if (arr[i] > m)
+            		m = arr[i];
+        }
+    	int co[m + 1] = {0};
+    	for (int i = 0; i < n; i++)
+    	    	co[arr[i]]++;
+    	int in = 0;
+    	for (int i = 0; i <= m; i++)
+	{
+    	    	for (int j = 0; j < co[i]; j++)
+		{
+    	        	arr[in] = i;
+    	        	in++;
+    	    	}
+    	}
+}
 
+main()
+{
+    	int n;
+    	cout << "Enter size of array: ";
+    	cin >> n;
+    	int arr[n];
+    	cout << "Enter elements: ";
+    	for (int i = 0; i < n; i++) 
+		cin >> arr[i];
+    	csort(arr, n);
+    	cout << "Sorted list: ";
+    	for (int i = 0; i < n; i++) 
+		cout << arr[i] << " ";
+    	cout << endl;
+    	return 0;
+}
+            </code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def csort(arr):
+    	m = max(arr)
+    	co = [0] * (m + 1)
+    	for num in arr:
+        	count[num] += 1
+    	in = 0
+    	for i in range(len(co)):
+        	for j in range(co[i]):
+            		arr[in] = i
+            		in += 1
+
+arr = eval(input("Enter list: "))
+csort(arr)
+print("Sorted list:", arr)
+            </code></pre>
+        </div>
+    </div>
+</div>
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
 <ul>
@@ -122,10 +222,31 @@ Counting Sort is a non-comparative sorting algorithm that counts occurrences of 
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";}
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
+
 </script>
 
 </div>

@@ -136,13 +136,13 @@ int partition(int arr[], int left, int right)
     	return i + 1;
 }
 
-void quickSort(int arr[], int left, int right)
+void qsort(int arr[], int left, int right)
 {
     	if (left < right)
 	{
         	int p = partition(arr, left, right);
-        	quickSort(arr, left, p - 1);
-        	quickSort(arr, p + 1, right);
+        	qsort(arr, left, p - 1);
+        	qsort(arr, p + 1, right);
     	}
 
 main()

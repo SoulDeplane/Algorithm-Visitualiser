@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,7 +22,6 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -40,12 +45,36 @@ th, td { padding: 5px; }
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 400px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -78,6 +107,87 @@ Each job has a deadline and profit, and the goal is to schedule jobs optimally t
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;algorithm&gt;
+#include&lt;vector&gt;
+using namespace std;
+struct Job
+{
+    	char id;
+    	int deadline, profit;
+};
+
+bool compare(Job a, Job b)
+{
+    	return a.profit > b.profit;
+}
+
+void jobSequencing(vector<Job>& jobs, int n)
+{
+    	sort(jobs.begin(), jobs.end(), compare);
+    	vector<bool> slot(n, false);
+    	vector<char> result(n, '-');
+    	for (int i = 0; i < n; i++)
+	{
+    	    	for (int j = min(n, jobs[i].deadline) - 1; j >= 0; j--)
+		{
+    	    	    	if (!slot[j])
+			{
+    	    	    	    	slot[j] = true;
+    	    	    	    	result[j] = jobs[i].id;
+    	    	    	    	break;
+    	    	    	}
+    	    	}
+    	}
+    	cout << "Scheduled Jobs: ";
+    	for (char job : result)
+    	    	if (job != '-') cout << job << " ";
+    	cout << endl;
+}
+
+main()
+{
+    	int n;
+    	cout << "Enter number of jobs: ";
+    	cin >> n;
+    	vector<Job> jobs(n);
+    	cout << "Enter job id, deadline, and profit:\n";
+    	for (int i = 0; i < n; i++) 
+    	    	cin >> jobs[i].id >> jobs[i].deadline >> jobs[i].profit;
+    	jobSequencing(jobs, n);
+    	return 0;
+}           
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def job_sequencing(jobs, n):
+    	jobs.sort(key=lambda x: x[2], reverse=True)
+    	result = ['-'] * n
+    	slot = [False] * n
+    	for job in jobs:
+    	    	for j in range(min(n, job[1]) - 1, -1, -1):
+    	    	    	if not slot[j]:
+    	    	    	    	slot[j] = True
+    	    	    	    	result[j] = job[0]
+    	    	    	    	break
+    	print("Scheduled Jobs:", [job for job in result if job != '-'])
+
+jobs = eval(input("Enter list of (id, deadline, profit) tuples: "))
+job_sequencing(jobs, len(jobs))
+            </code></pre>
+        </div>
+    </div>
+</div>
 
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
@@ -114,10 +224,30 @@ Each job has a deadline and profit, and the goal is to schedule jobs optimally t
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";}
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

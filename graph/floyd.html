@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,8 +22,7 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
-white-space: nowrap;
+  white-space: nowrap;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -41,12 +46,36 @@ white-space: nowrap;
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 450px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -84,7 +113,81 @@ Floyd-Warshall finds shortest paths between all pairs of vertices using dynamic 
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;climits&gt;
+using namespace std;
+void floydWarshall(vector<vector<int>>& graph, int nodes)
+{
+    	for (int k = 0; k < nodes; k++)
+	{
+    	    	for (int i = 0; i < nodes; i++)
+		{
+    	    	    	for (int j = 0; j < nodes; j++)
+			{
+    	    	        	if (graph[i][k] != INT_MAX && graph[k][j] != INT_MAX)
+    	    	            		graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j]);
+    	    	    	}
+    	    	}
+    	}
+    	cout << "Shortest distances between all pairs:\n";
+    	for (int i = 0; i < nodes; i++)
+	{
+    	    	for (int j = 0; j < nodes; j++)
+		{
+    	    	    	if (graph[i][j] == INT_MAX)
+    	    	    	    	cout << "INF ";
+    	    	    	else
+    	    	    	    	cout << graph[i][j] << " ";
+    	    	}
+    	    	cout << endl;
+    	}
+}
 
+main()
+{
+    	int nodes;
+    	cout << "Enter number of nodes: ";
+    	cin >> nodes;
+    	vector<vector<int>> graph(nodes, vector<int>(nodes));
+    	cout << "Enter adjacency matrix (use large value for no direct path):\n";
+    	for (int i = 0; i < nodes; i++)
+	{
+    	    	for (int j = 0; j < nodes; j++)
+    	        	cin >> graph[i][j];
+	}
+    	floydWarshall(graph, nodes);
+}
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def floyd_warshall(graph, nodes):
+    	for k in range(nodes):
+    	    	for i in range(nodes):
+    	    	    	for j in range(nodes):
+    	    	        	if graph[i][k] != float('inf') and graph[k][j] != float('inf'):
+    	    	            graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j])
+    	print("Shortest distances between all pairs:")
+    	for row in graph:
+    	    	print(" ".join("INF" if val == float('inf') else str(val) for val in row))
+
+nodes = int(input("Enter number of nodes: "))
+graph = [list(map(int, input().split())) for _ in range(nodes)]
+floyd_warshall(graph, nodes)
+</code></pre>
+        </div>
+    </div>
+</div>
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
 <ul>
@@ -122,10 +225,30 @@ Floyd-Warshall finds shortest paths between all pairs of vertices using dynamic 
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "350px";}
+  document.getElementById("mySidenav").style.width = "350px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

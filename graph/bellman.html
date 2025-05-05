@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,8 +22,7 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
-white-space: nowrap;
+  white-space: nowrap;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -41,12 +46,36 @@ white-space: nowrap;
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 425px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -84,7 +113,85 @@ Bellman-Ford finds shortest paths even in graphs with negative weight edges usin
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;climits&gt;
+using namespace std;
+void bellmanFord(vector<vector<int>>& edges, int nodes, int start) 
+{
+    	vector<int> dist(nodes, INT_MAX);
+    	dist[start] = 0;
+    	for (int i = 0; i < nodes - 1; i++)
+	{
+    	    	for (auto& edge : edges)
+		{
+    	    	    	int u = edge[0], v = edge[1], weight = edge[2];
+    	    	    	if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+    	    	    	    	dist[v] = dist[u] + weight;
+    	    	}
+    	}
+    	cout << "Shortest distances from node " << start << ":\n";
+    	for (int i = 0; i < nodes; i++)
+	{
+        	cout << "To " << i << ": ";
+		if (dist[i] == INT_MAX)
+		    	cout << "INF";
+		else
+		    	cout << dist[i];
+		cout << endl;
+    	}
+}
 
+main()
+{
+    	int nodes, edgesCount, start;
+    	cout << "Enter number of nodes and edges: ";
+    	cin >> nodes >> edgesCount;
+    	vector<vector<int>> edges(edgesCount, vector<int>(3));
+    	cout << "Enter edges (node1 node2 weight):\n";
+    	for (int i = 0; i < edgesCount; i++)
+        	cin >> edges[i][0] >> edges[i][1] >> edges[i][2];
+    	cout << "Enter starting node: ";
+    	cin >> start;
+    	bellmanFord(edges, nodes, start);
+}
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def bellman_ford(edges, nodes, start):
+    	dist = {i: float('inf') for i in range(nodes)}
+    	dist[start] = 0
+    	for _ in range(nodes - 1):
+    	    	for u, v, weight in edges:
+    	    	    	if dist[u] != float('inf') and dist[u] + weight < dist[v]:
+    	    	        	dist[v] = dist[u] + weight
+    	print(f"Shortest distances from node {start}:")
+    	for v in range(nodes):
+    	    	print(f"To {v}: {'INF' if dist[v] == float('inf') else dist[v]}")
+
+nodes, edges_count = input("Enter number of nodes and edges: ").split()
+nodes = int(nodes)
+edges_count = int(edges_count)
+edges = []
+print("Enter edges (node1 node2 weight):")
+for _ in range(edges_count):
+    	edges.append(tuple(map(int, input().split())))
+start = int(input("Enter starting node: "))
+bellman_ford(edges, nodes, start)
+</code></pre>
+        </div>
+    </div>
+</div>
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
 <ul>
@@ -122,10 +229,30 @@ Bellman-Ford finds shortest paths even in graphs with negative weight edges usin
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "350px";}
+  document.getElementById("mySidenav").style.width = "250px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

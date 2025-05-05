@@ -1,9 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Algorithm Visualizer</title>
+<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { margin: 0; }
+body { margin: 0;}
 div { padding: 5px; }
 h1 { text-align: center; }
 .one { background-image: url("C:/Users/Nitya/Desktop/Project/DAA/Website/background.jpeg"); color: white; }
-.two { padding: 10px; }
+.two { padding: 30px; }
 th, td { padding: 5px; }
 .sidenav {
   height: 100%;
@@ -16,8 +22,7 @@ th, td { padding: 5px; }
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 20px;
-  background-color: #111;
-white-space: nowrap;
+  white-space: nowrap;
 }
 .sidenav a {
   padding: 15px 25px;
@@ -41,12 +46,36 @@ white-space: nowrap;
   .sidenav { padding-top: 15px; }
   .sidenav a { font-size: 18px; }
 }
+.tab-container {
+  max-width: 450px;
+  margin-left: 15px;
+  border: 1px solid #ddd;
+}
+.tab-buttons {
+  display: flex;
+  background-color: #f1f1f1;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
+.tab-button.active {
+  background-color: #ccc;
+}
+.tab-content {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+.tab-pane {
+  display: none;
+}
+.tab-pane.active {
+  display: block;
+}
 </style>
-
-<html>
-<head>
-<title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
 </head>
 <body>
 <div id="mySidenav" class="sidenav">
@@ -84,7 +113,92 @@ Dijkstra’s algorithm finds the shortest path from a source to all vertices usi
 <h3><b> Visual Representation: </b></h3>
 
 <h3><b> Code Implementation: </b></h3>
+<div class="tab-container">
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">C++</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Python</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">
+            <pre><code>
+#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;climits&gt;
+using namespace std;
+void dijkstra(vector<vector<int>>& graph, int nodes, int start)
+{
+    	vector<int> dist(nodes, INT_MAX);
+    	vector<bool> visited(nodes, false);
+    	dist[start] = 0;
+    	for (int i = 0; i < nodes; i++)
+	{
+    	    	int u = -1;
+    	    	for (int j = 0; j < nodes; j++)
+		{
+    	    	    	if (!visited[j] && (u == -1 || dist[j] < dist[u]))
+    	    	        	u = j;
+    	    	}
+    	    	visited[u] = true;
+    	    	for (int v = 0; v < nodes; v++)
+		{
+    	    	    	if (graph[u][v] && !visited[v] && dist[u] + graph[u][v] < dist[v])
+    	    	        	dist[v] = dist[u] + graph[u][v];
+    	    	}
+    	}
+    cout << "Shortest distances from node " << start << ":\n";
+    for (int i = 0; i < nodes; i++)
+        cout << "To " << i << ": " << dist[i] << endl;
+}
 
+main()
+{
+    	int nodes, start;
+    	cout << "Enter number of nodes: ";
+    	cin >> nodes;
+    	vector<vector<int>> graph(nodes, vector<int>(nodes));
+    	cout << "Enter adjacency matrix:\n";
+    	for (int i = 0; i < nodes; i++)
+	{
+    	    	for (int j = 0; j < nodes; j++)
+    	        	cin >> graph[i][j];
+	}
+    	cout << "Enter starting node: ";
+    	cin >> start;
+    	dijkstra(graph, nodes, start);
+}
+</code></pre>
+        </div>
+
+        <div id="tab2" class="tab-pane">
+            <pre><code>
+def dijkstra(graph, nodes, start):
+    	dist = {i: float('inf') for i in range(nodes)}
+    	visited = set()
+    	dist[start] = 0
+    	for _ in range(nodes):
+    	    u = None
+    	    min_value = float('inf')
+    	    for node in range(nodes):
+    	        	if node not in visited and min_cost[node] < min_value:
+    	        	    	min_value = min_cost[node]
+    	        	    	u = node
+        		visited.add(u)
+        		for v in range(nodes):
+        		    	if graph[u][v] and v not in visited:
+					if dist[u] + graph[u][v] < dist[v]:
+        	        			dist[v] = dist[u] + graph[u][v]
+    	print(f"Shortest distances from node {start}:")
+    	for v in range(nodes):
+        	print(f"To {v}: {dist[v]}")
+
+nodes = int(input("Enter number of nodes: "))
+graph = [list(map(int, input().split())) for _ in range(nodes)]
+start = int(input("Enter starting node: "))
+dijkstra(graph, nodes, start)
+</code></pre>
+        </div>
+    </div>
+</div>
 <h3><b> Time Complexity: </b></h3>
 <p align="JUSTIFY">
 <ul>
@@ -122,10 +236,30 @@ Dijkstra’s algorithm finds the shortest path from a source to all vertices usi
 
 <script>
 function openNav() {
-  document.getElementById("mySidenav").style.width = "350px";}
+  document.getElementById("mySidenav").style.width = "350px";
+}
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";}
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+function openTab(evt, tabName) {
+  let i, tabPanes, tabButtons;
+  tabPanes = document.getElementsByClassName("tab-pane");
+  for (i = 0; i < tabPanes.length; i++) {
+    tabPanes[i].style.display = "none";
+    tabPanes[i].classList.remove("active");
+  }
+
+  tabButtons = document.getElementsByClassName("tab-button");
+  for (i = 0; i < tabButtons.length; i++) {
+    tabButtons[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  document.getElementById(tabName).classList.add("active");
+  evt.currentTarget.classList.add("active");
+}
 </script>
 
 </div>

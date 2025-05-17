@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Merge Sort Visualization with Splitting</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      height: 240px;
+      margin-top: 20px;
+      position: relative;
+    }
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .bar {
+      width: 30px;
+      background-color: steelblue;
+      border-radius: 3px;
+      transition: height 1s ease, background-color 0.3s ease;
+      user-select: none;
+      z-index: 1;
+    }
+    .bar-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+    .bar.comparing {
+      background-color: orange !important;
+      transition: none !important;
+    }
+    .bar.merging {
+      background-color: green !important;
+      transition: none !important;
+    }
+
+    /* Highlight segment container by outline */
+    .segment-highlight {
+      position: absolute;
+      bottom: 0;
+      height: 100%;
+      border: 3px solid #ff9800; /* Orange outline */
+      border-radius: 6px;
+      pointer-events: none;
+      transition: left 0.5s ease, width 0.5s ease;
+      z-index: 0;
+      box-sizing: border-box;
+    }
+
+    /* Different color for merging highlight */
+    .segment-merging {
+      border-color: #4caf50; /* Green outline */
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="startMergeSort()">Start Merge Sort</button>
+  <button onclick="resetBars()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const originalArray = [50, 120, 80, 30, 90, 60, 20, 100];
+    let currentArray = [...originalArray];
+    const container = document.getElementById('container');
+
+    // This element visually highlights the current segment
+    let segmentHighlight = null;
+
+    function createBars(arr) {
+      container.innerHTML = '';
+      arr.forEach(value => {
+        const barContainer = document.createElement('div');
+        barContainer.classList.add('bar-container');
+
+        const label = document.createElement('div');
+        label.classList.add('bar-label');
+        label.textContent = value;
+
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = value + 'px';
+
+        barContainer.appendChild(label);
+        barContainer.appendChild(bar);
+        container.appendChild(barContainer);
+      });
+
+      // Create the segment highlight overlay after bars
+      segmentHighlight = document.createElement('div');
+      segmentHighlight.classList.add('segment-highlight');
+      container.appendChild(segmentHighlight);
+      segmentHighlight.style.width = '0px';
+      segmentHighlight.style.left = '0px';
+    }
+
+    // Highlight current segment from index l to r
+    async function highlightSegment(l, r, isMerging = false) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      if (l > r) {
+        segmentHighlight.style.width = '0px';
+        return;
+      }
+      // Calculate left offset and width for highlight
+      const firstBar = barContainers[l];
+      const lastBar = barContainers[r];
+      const containerRect = container.getBoundingClientRect();
+      const firstRect = firstBar.getBoundingClientRect();
+      const lastRect = lastBar.getBoundingClientRect();
+
+      // relative left inside container
+      const left = firstRect.left - containerRect.left - 4; // small offset to cover gaps
+      const width = (lastRect.right - firstRect.left) + 8;
+
+      segmentHighlight.style.left = left + 'px';
+      segmentHighlight.style.width = width + 'px';
+
+      if (isMerging) {
+        segmentHighlight.classList.add('segment-merging');
+      } else {
+        segmentHighlight.classList.remove('segment-merging');
+      }
+      // pause so user sees highlight
+      await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
+    async function merge(arr, l, m, r) {
+      await highlightSegment(l, r, false);
+
+      let n1 = m - l + 1;
+      let n2 = r - m;
+
+      let L = new Array(n1);
+      let R = new Array(n2);
+
+      const barContainers = document.getElementsByClassName('bar-container');
+
+      // Highlight copying temp arrays
+      for (let i = 0; i < n1; i++) {
+        L[i] = arr[l + i];
+        barContainers[l + i].querySelector('.bar').classList.add('comparing');
+      }
+      for (let j = 0; j < n2; j++) {
+        R[j] = arr[m + 1 + j];
+        barContainers[m + 1 + j].querySelector('.bar').classList.add('comparing');
+      }
+      await new Promise(resolve => setTimeout(resolve, 800));
+      for (let i = l; i <= m; i++) {
+        barContainers[i].querySelector('.bar').classList.remove('comparing');
+      }
+      for (let j = m + 1; j <= r; j++) {
+        barContainers[j].querySelector('.bar').classList.remove('comparing');
+      }
+
+      let i = 0, j = 0, k = l;
+
+      while (i < n1 && j < n2) {
+        // Highlight the bar being merged
+        barContainers[k].querySelector('.bar').classList.add('merging');
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        if (L[i] <= R[j]) {
+          arr[k] = L[i];
+          barContainers[k].querySelector('.bar').style.height = L[i] + 'px';
+          barContainers[k].querySelector('.bar-label').textContent = L[i];
+          i++;
+        } else {
+          arr[k] = R[j];
+          barContainers[k].querySelector('.bar').style.height = R[j] + 'px';
+          barContainers[k].querySelector('.bar-label').textContent = R[j];
+          j++;
+        }
+        barContainers[k].querySelector('.bar').classList.remove('merging');
+        k++;
+      }
+
+      while (i < n1) {
+        barContainers[k].querySelector('.bar').classList.add('merging');
+        await new Promise(resolve => setTimeout(resolve, 600));
+        arr[k] = L[i];
+        barContainers[k].querySelector('.bar').style.height = L[i] + 'px';
+        barContainers[k].querySelector('.bar-label').textContent = L[i];
+        barContainers[k].querySelector('.bar').classList.remove('merging');
+        i++;
+        k++;
+      }
+
+      while (j < n2) {
+        barContainers[k].querySelector('.bar').classList.add('merging');
+        await new Promise(resolve => setTimeout(resolve, 600));
+        arr[k] = R[j];
+        barContainers[k].querySelector('.bar').style.height = R[j] + 'px';
+        barContainers[k].querySelector('.bar-label').textContent = R[j];
+        barContainers[k].querySelector('.bar').classList.remove('merging');
+        j++;
+        k++;
+      }
+
+      // Highlight merged segment in green for visibility
+      await highlightSegment(l, r, true);
+    }
+
+    async function mergeSort(arr, l, r) {
+      if (l >= r) {
+        // Highlight single element segment briefly
+        await highlightSegment(l, r, false);
+        return;
+      }
+      const m = l + Math.floor((r - l) / 2);
+      await highlightSegment(l, r, false);
+      await mergeSort(arr, l, m);
+      await mergeSort(arr, m + 1, r);
+      await merge(arr, l, m, r);
+    }
+
+    function startMergeSort() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      mergeSort(currentArray, 0, currentArray.length - 1);
+    }
+
+    function resetBars() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      segmentHighlight.style.width = '0px';
+    }
+
+    createBars(originalArray);
+  </script>
+</body>
+</html>

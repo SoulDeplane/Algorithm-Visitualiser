@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Count Sort Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #container, #count-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    #container {
+      height: 240px;
+      margin-bottom: 10px;
+    }
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bar {
+      width: 30px;
+      background-color: steelblue;
+      border-radius: 3px;
+      transition: height 0.6s ease;
+      user-select: none;
+    }
+    .bar-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+    .bar.counting {
+      background-color: orange !important;
+      transition: none !important;
+    }
+    .bar.writing {
+      background-color: green !important;
+      transition: none !important;
+    }
+    .count-bar {
+      width: 30px;
+      height: 50px;
+      background-color: #ccc;
+      font-weight: bold;
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="startCountSort()">Start Count Sort</button>
+  <button onclick="resetBars()">Reset</button>
+  <div id="wrapper">
+    <div id="container"></div>
+    <div id="count-container"></div>
+  </div>
+
+  <script>
+    const originalArray = [4, 2, 2, 8, 3, 3, 1];
+    let currentArray = [...originalArray];
+
+    const container = document.getElementById('container');
+    const countContainer = document.getElementById('count-container');
+
+    function createBars(arr) {
+      container.innerHTML = '';
+      arr.forEach(value => {
+        const barContainer = document.createElement('div');
+        barContainer.classList.add('bar-container');
+
+        const label = document.createElement('div');
+        label.classList.add('bar-label');
+        label.textContent = value;
+
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = (value * 20) + 'px';
+
+        barContainer.appendChild(label);
+        barContainer.appendChild(bar);
+        container.appendChild(barContainer);
+      });
+    }
+
+    function createCountBars(max) {
+      countContainer.innerHTML = '';
+      for (let i = 0; i <= max; i++) {
+        const countBar = document.createElement('div');
+        countBar.classList.add('count-bar');
+        countBar.textContent = '0';
+        countBar.dataset.value = i;
+        countContainer.appendChild(countBar);
+      }
+    }
+
+    async function countSortVisual(arr) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      const countBars = document.getElementsByClassName('count-bar');
+      const count = new Array(Math.max(...arr) + 1).fill(0);
+
+      for (let i = 0; i < arr.length; i++) {
+        const bar = barContainers[i].querySelector('.bar');
+        bar.classList.add('counting');
+        await new Promise(res => setTimeout(res, 500));
+        count[arr[i]]++;
+        countBars[arr[i]].textContent = count[arr[i]];
+        bar.classList.remove('counting');
+      }
+
+      let idx = 0;
+      for (let i = 0; i < count.length; i++) {
+        while (count[i] > 0) {
+          const bar = barContainers[idx].querySelector('.bar');
+          const label = barContainers[idx].querySelector('.bar-label');
+
+          bar.classList.add('writing');
+          await new Promise(res => setTimeout(res, 500));
+
+          arr[idx] = i;
+          bar.style.height = (i * 20) + 'px';
+          label.textContent = i;
+
+          bar.classList.remove('writing');
+          idx++;
+          count[i]--;
+          countBars[i].textContent = count[i];
+        }
+      }
+    }
+
+    function startCountSort() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      createCountBars(Math.max(...currentArray));
+      countSortVisual(currentArray);
+    }
+
+    function resetBars() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      createCountBars(Math.max(...currentArray));
+    }
+
+    createBars(originalArray);
+    createCountBars(Math.max(...originalArray));
+  </script>
+</body>
+</html>

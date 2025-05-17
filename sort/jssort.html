@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Selection Sort Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      height: 240px;
+      margin-top: 20px;
+    }
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bar {
+      width: 30px;
+      background-color: steelblue;
+      border-radius: 3px;
+      transition: height 1s ease;
+      user-select: none;
+    }
+    .bar-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+    .bar.comparing {
+      background-color: orange !important;
+      transition: none !important;
+    }
+    .bar.swapping {
+      background-color: tomato !important;
+      transition: none !important;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="startSelectionSort()">Start Selection Sort</button>
+  <button onclick="resetBars()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const originalArray = [50, 120, 80, 30, 90, 60, 20, 100];
+    let currentArray = [...originalArray];
+    const container = document.getElementById('container');
+
+    function createBars(arr) {
+      container.innerHTML = '';
+      arr.forEach(value => {
+        const barContainer = document.createElement('div');
+        barContainer.classList.add('bar-container');
+
+        const label = document.createElement('div');
+        label.classList.add('bar-label');
+        label.textContent = value;
+
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = value + 'px';
+
+        barContainer.appendChild(label);
+        barContainer.appendChild(bar);
+        container.appendChild(barContainer);
+      });
+    }
+
+    async function selectionSortVisual(arr) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      const n = arr.length;
+
+      for (let i = 0; i < n - 1; i++) {
+        let minIdx = i;
+        const barMin = barContainers[minIdx].querySelector('.bar');
+        barMin.classList.add('comparing');
+
+        for (let j = i + 1; j < n; j++) {
+          const barJ = barContainers[j].querySelector('.bar');
+          barJ.classList.add('comparing');
+
+          await new Promise(resolve => setTimeout(resolve, 600));
+
+          if (arr[j] < arr[minIdx]) {
+            barMin.classList.remove('comparing');
+            minIdx = j;
+            barContainers[minIdx].querySelector('.bar').classList.add('comparing');
+          } else {
+            barJ.classList.remove('comparing');
+          }
+        }
+
+        if (minIdx !== i) {
+          const barI = barContainers[i].querySelector('.bar');
+          const barMinNew = barContainers[minIdx].querySelector('.bar');
+          const labelI = barContainers[i].querySelector('.bar-label');
+          const labelMin = barContainers[minIdx].querySelector('.bar-label');
+
+          barI.classList.remove('comparing');
+          barMinNew.classList.remove('comparing');
+
+          barI.classList.add('swapping');
+          barMinNew.classList.add('swapping');
+
+          await new Promise(resolve => setTimeout(resolve, 600));
+
+          [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+
+          barI.style.height = arr[i] + 'px';
+          barMinNew.style.height = arr[minIdx] + 'px';
+
+          labelI.textContent = arr[i];
+          labelMin.textContent = arr[minIdx];
+
+          barI.classList.remove('swapping');
+          barMinNew.classList.remove('swapping');
+        } else {
+          barContainers[minIdx].querySelector('.bar').classList.remove('comparing');
+        }
+      }
+    }
+
+    function startSelectionSort() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      selectionSortVisual(currentArray);
+    }
+
+    function resetBars() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+    }
+
+    createBars(originalArray);
+  </script>
+</body>
+</html>

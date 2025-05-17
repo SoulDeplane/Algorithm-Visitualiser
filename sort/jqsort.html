@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quick Sort Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      height: 240px;
+      margin-top: 20px;
+      position: relative;
+    }
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .bar {
+      width: 30px;
+      background-color: steelblue;
+      border-radius: 3px;
+      transition: height 0.6s ease, background-color 0.3s ease;
+      user-select: none;
+      z-index: 1;
+    }
+    .bar-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+    .bar.comparing {
+      background-color: orange !important;
+      transition: none !important;
+    }
+    .bar.pivot {
+      background-color: purple !important;
+      transition: none !important;
+    }
+    .bar.swapping {
+      background-color: tomato !important;
+      transition: none !important;
+    }
+    /* Highlight current segment container by outline */
+    .segment-highlight {
+      position: absolute;
+      bottom: 0;
+      height: 100%;
+      border: 3px solid #2196f3; /* Blue outline */
+      border-radius: 6px;
+      pointer-events: none;
+      transition: left 0.5s ease, width 0.5s ease;
+      z-index: 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="startQuickSort()">Start Quick Sort</button>
+  <button onclick="resetBars()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const originalArray = [50, 120, 80, 30, 90, 60, 20, 100];
+    let currentArray = [...originalArray];
+    const container = document.getElementById('container');
+
+    let segmentHighlight = null;
+
+    function createBars(arr) {
+      container.innerHTML = '';
+      arr.forEach(value => {
+        const barContainer = document.createElement('div');
+        barContainer.classList.add('bar-container');
+
+        const label = document.createElement('div');
+        label.classList.add('bar-label');
+        label.textContent = value;
+
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = value + 'px';
+
+        barContainer.appendChild(label);
+        barContainer.appendChild(bar);
+        container.appendChild(barContainer);
+      });
+
+      // Create the segment highlight overlay after bars
+      segmentHighlight = document.createElement('div');
+      segmentHighlight.classList.add('segment-highlight');
+      container.appendChild(segmentHighlight);
+      segmentHighlight.style.width = '0px';
+      segmentHighlight.style.left = '0px';
+    }
+
+    async function highlightSegment(l, r) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      if (l > r) {
+        segmentHighlight.style.width = '0px';
+        return;
+      }
+      const firstBar = barContainers[l];
+      const lastBar = barContainers[r];
+      const containerRect = container.getBoundingClientRect();
+      const firstRect = firstBar.getBoundingClientRect();
+      const lastRect = lastBar.getBoundingClientRect();
+
+      const left = firstRect.left - containerRect.left - 4;
+      const width = (lastRect.right - firstRect.left) + 8;
+
+      segmentHighlight.style.left = left + 'px';
+      segmentHighlight.style.width = width + 'px';
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+    }
+
+    async function swap(arr, i, j) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      const bar1 = barContainers[i].querySelector('.bar');
+      const bar2 = barContainers[j].querySelector('.bar');
+      const label1 = barContainers[i].querySelector('.bar-label');
+      const label2 = barContainers[j].querySelector('.bar-label');
+
+      bar1.classList.add('swapping');
+      bar2.classList.add('swapping');
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+
+      bar1.style.height = arr[i] + 'px';
+      bar2.style.height = arr[j] + 'px';
+      label1.textContent = arr[i];
+      label2.textContent = arr[j];
+
+      bar1.classList.remove('swapping');
+      bar2.classList.remove('swapping');
+    }
+
+    async function partition(arr, low, high) {
+      const barContainers = document.getElementsByClassName('bar-container');
+      const pivotIndex = high;
+      const pivotValue = arr[pivotIndex];
+
+      // Highlight current segment and pivot
+      await highlightSegment(low, high);
+
+      barContainers[pivotIndex].querySelector('.bar').classList.add('pivot');
+
+      let i = low - 1;
+
+      for (let j = low; j < high; j++) {
+        barContainers[j].querySelector('.bar').classList.add('comparing');
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        if (arr[j] < pivotValue) {
+          i++;
+          await swap(arr, i, j);
+        }
+        barContainers[j].querySelector('.bar').classList.remove('comparing');
+      }
+
+      // Swap pivot to correct position
+      await swap(arr, i + 1, high);
+
+      barContainers[pivotIndex].querySelector('.bar').classList.remove('pivot');
+
+      return i + 1;
+    }
+
+    async function quickSort(arr, low, high) {
+      if (low < high) {
+        const pi = await partition(arr, low, high);
+        await quickSort(arr, low, pi - 1);
+        await quickSort(arr, pi + 1, high);
+      } else if (low === high) {
+        // Highlight single bar segment briefly
+        await highlightSegment(low, high);
+      }
+    }
+
+    function startQuickSort() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      quickSort(currentArray, 0, currentArray.length - 1);
+    }
+
+    function resetBars() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      segmentHighlight.style.width = '0px';
+    }
+
+    createBars(originalArray);
+  </script>
+
+</body>
+</html>

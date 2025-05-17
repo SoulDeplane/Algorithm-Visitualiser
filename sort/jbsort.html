@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bubble Sort Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 4px;
+      height: 240px;
+      margin-top: 20px;
+    }
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bar {
+      width: 30px;
+      background-color: steelblue;
+      border-radius: 3px;
+      transition: height 1s ease;
+      user-select: none;
+    }
+    .bar-label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+    .bar.comparing {
+      background-color: orange !important;
+      transition: none !important;
+    }
+    .bar.swapping {
+      background-color: tomato !important;
+      transition: none !important;
+    }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="startBubbleSort()">Start Bubble Sort</button>
+  <button onclick="resetBars()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const originalArray = [50, 120, 80, 30, 90, 60, 20, 100];
+    let currentArray = [...originalArray];
+    const container = document.getElementById('container');
+
+    function createBars(arr) {
+      container.innerHTML = '';
+      arr.forEach(value => {
+        const barContainer = document.createElement('div');
+        barContainer.classList.add('bar-container');
+
+        const label = document.createElement('div');
+        label.classList.add('bar-label');
+        label.textContent = value;
+
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = value + 'px';
+
+        barContainer.appendChild(label);
+        barContainer.appendChild(bar);
+        container.appendChild(barContainer);
+      });
+    }
+
+    async function bubbleSortVisual(arr) {
+      const barContainers = document.getElementsByClassName('bar-container');
+
+      for (let i = 0; i < arr.length - 1; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+          const bar1 = barContainers[j].querySelector('.bar');
+          const bar2 = barContainers[j + 1].querySelector('.bar');
+          const label1 = barContainers[j].querySelector('.bar-label');
+          const label2 = barContainers[j + 1].querySelector('.bar-label');
+
+          bar1.classList.add('comparing');
+          bar2.classList.add('comparing');
+
+          await new Promise(resolve => setTimeout(resolve, 600));
+
+          if (arr[j] > arr[j + 1]) {
+            bar1.classList.remove('comparing');
+            bar2.classList.remove('comparing');
+            bar1.classList.add('swapping');
+            bar2.classList.add('swapping');
+
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+
+            bar1.style.height = arr[j] + 'px';
+            bar2.style.height = arr[j + 1] + 'px';
+            label1.textContent = arr[j];
+            label2.textContent = arr[j + 1];
+
+            bar1.classList.remove('swapping');
+            bar2.classList.remove('swapping');
+          } else {
+            bar1.classList.remove('comparing');
+            bar2.classList.remove('comparing');
+          }
+        }
+      }
+    }
+
+    function startBubbleSort() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+      bubbleSortVisual(currentArray);
+    }
+
+    function resetBars() {
+      currentArray = [...originalArray];
+      createBars(currentArray);
+    }
+
+    createBars(originalArray);
+  </script>
+</body>
+</html>

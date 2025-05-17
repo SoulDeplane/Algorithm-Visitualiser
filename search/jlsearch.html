@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linear Search Visualization</title>
+  <style>
+    body { text-align: center; font-family: Arial; margin-top: 30px; }
+    #container { display: flex; justify-content: center; gap: 6px; margin-top: 20px; }
+    .element {
+      width: 40px; height: 60px; background: steelblue; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 18px; border-radius: 5px;
+      transition: background 0.3s;
+    }
+    .highlight { background: orange !important; }
+    .found { background: green !important; }
+    input { margin-top: 20px; padding: 6px; font-size: 16px; width: 100px; }
+    button { margin: 5px; padding: 8px 16px; font-size: 16px; cursor: pointer; }
+/* Hide number input arrows */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+  </style>
+</head>
+<body>
+  <input type="number" id="searchValue" placeholder="Search for...">
+  <br>
+  <button onclick="startLinearSearch()">Start Search</button>
+  <button onclick="reset()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const data = [3, 7, 2, 9, 4, 8, 1, 5];
+    const container = document.getElementById('container');
+
+    function draw() {
+      container.innerHTML = '';
+      data.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'element';
+        div.textContent = num;
+        container.appendChild(div);
+      });
+    }
+
+    async function startLinearSearch() {
+      const target = parseInt(document.getElementById('searchValue').value);
+      const elements = document.getElementsByClassName('element');
+      for (let i = 0; i < data.length; i++) {
+        elements[i].classList.add('highlight');
+        await new Promise(r => setTimeout(r, 500));
+        if (data[i] === target) {
+          elements[i].classList.remove('highlight');
+          elements[i].classList.add('found');
+          return;
+        }
+        elements[i].classList.remove('highlight');
+      }
+      alert("Element not found");
+    }
+
+    function reset() {
+      draw();
+    }
+
+    draw();
+  </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jump Search Visualization</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin-top: 30px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+    }
+    .element {
+      width: 40px;
+      height: 60px;
+      background: steelblue;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 5px;
+      transition: background-color 0.4s, opacity 0.4s;
+    }
+    .jump {
+      background-color: darkorange !important;
+    }
+    .scan {
+      background-color: teal !important;
+    }
+    .found {
+      background-color: green !important;
+    }
+    .discarded {
+      opacity: 0.4;
+    }
+    input {
+      margin-top: 20px;
+      padding: 6px;
+      font-size: 16px;
+      width: 100px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+/* Hide number input arrows */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+  </style>
+</head>
+<body>
+  <input type="number" id="searchValue" placeholder="Search for..." inputmode="numeric">
+  <br>
+  <button onclick="startJumpSearch()">Start Search</button>
+  <button onclick="reset()">Reset</button>
+  <div id="container"></div>
+
+  <script>
+    const sortedArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const container = document.getElementById('container');
+
+    function draw() {
+      container.innerHTML = '';
+      sortedArray.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'element';
+        div.textContent = num;
+        container.appendChild(div);
+      });
+    }
+
+    async function startJumpSearch() {
+      const target = parseInt(document.getElementById('searchValue').value);
+      if (isNaN(target)) return;
+
+      const elements = document.getElementsByClassName('element');
+      const n = sortedArray.length;
+      const step = Math.floor(Math.sqrt(n));
+      let prev = 0;
+      let curr = step;
+
+      // Jumping phase
+      while (curr < n && sortedArray[curr - 1] < target) {
+        elements[curr - 1].classList.add('jump');
+        await new Promise(r => setTimeout(r, 800));
+        for (let i = prev; i < curr; i++) {
+          elements[i].classList.add('discarded');
+        }
+        elements[curr - 1].classList.remove('jump');
+        prev = curr;
+        curr += step;
+      }
+
+      // Linear scan within identified block
+      for (let i = prev; i < Math.min(curr, n); i++) {
+        elements[i].classList.add('scan');
+        await new Promise(r => setTimeout(r, 700));
+        if (sortedArray[i] === target) {
+          elements[i].classList.remove('scan');
+          elements[i].classList.add('found');
+          return;
+        } else {
+          elements[i].classList.remove('scan');
+          elements[i].classList.add('discarded');
+        }
+      }
+    }
+
+    function reset() {
+      draw();
+    }
+
+    draw();
+  </script>
+</body>
+</html>

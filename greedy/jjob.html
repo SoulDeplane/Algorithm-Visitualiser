@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Job Sequencing Visualization</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin-top: 30px;
+    }
+    #jobsContainer, #timeline {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .job {
+      width: 100px;
+      height: 60px;
+      background: steelblue;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.4s, transform 0.4s;
+      user-select: none;
+    }
+    .checking {
+      background: darkorange !important;
+    }
+    .scheduled {
+      background: green !important;
+    }
+    .skipped {
+      background: crimson !important;
+      opacity: 0.6;
+    }
+    .swapping {
+      background: darkorange !important;
+      transform: scale(1.2);
+    }
+    .slot {
+      width: 100px;
+      height: 40px;
+      background: lightgray;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .filled {
+      background: green !important;
+      color: white;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: darkgreen;
+      min-height: 24px;
+    }
+    button {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="startSequencing()">Start</button>
+  <button onclick="reset()">Reset</button>
+  <div id="jobsContainer"></div>
+  <h3>Timeline</h3>
+  <div id="timeline"></div>
+  <div id="result"></div>
+
+  <script>
+    let jobs = [
+      { id: 'J1', deadline: 2, profit: 100 },
+      { id: 'J2', deadline: 1, profit: 19 },
+      { id: 'J3', deadline: 2, profit: 27 },
+      { id: 'J4', deadline: 1, profit: 25 },
+      { id: 'J5', deadline: 3, profit: 15 }
+    ];
+
+    const jobsContainer = document.getElementById("jobsContainer");
+    const timeline = document.getElementById("timeline");
+    const result = document.getElementById("result");
+
+    // Draw jobs in current order
+    function drawJobs() {
+      jobsContainer.innerHTML = "";
+      jobs.forEach((job, index) => {
+        const div = document.createElement("div");
+        div.className = "job";
+        div.id = `job-${index}`;
+        div.innerHTML = `${job.id}<br>DL: ${job.deadline}<br>₹${job.profit}`;
+        jobsContainer.appendChild(div);
+      });
+    }
+
+    // Draw timeline slots
+    function drawTimeline(maxDeadline) {
+      timeline.innerHTML = "";
+      for (let i = 1; i <= maxDeadline; i++) {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.id = `slot-${i}`;
+        slot.innerText = `Slot ${i}`;
+        timeline.appendChild(slot);
+      }
+    }
+
+    // Swap two jobs and redraw
+    async function swap(i, j) {
+      const div1 = document.getElementById(`job-${i}`);
+      const div2 = document.getElementById(`job-${j}`);
+
+      div1.classList.add("swapping");
+      div2.classList.add("swapping");
+      await new Promise(r => setTimeout(r, 600));
+
+      // Swap in array
+      [jobs[i], jobs[j]] = [jobs[j], jobs[i]];
+      drawJobs();
+
+      await new Promise(r => setTimeout(r, 600));
+    }
+
+    // Bubble sort jobs by decreasing profit with animation
+    async function bubbleSortJobs() {
+      let n = jobs.length;
+      for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+          const div1 = document.getElementById(`job-${j}`);
+          const div2 = document.getElementById(`job-${j + 1}`);
+
+          div1.classList.add("checking");
+          div2.classList.add("checking");
+          await new Promise(r => setTimeout(r, 500));
+
+          if (jobs[j].profit < jobs[j + 1].profit) {
+            div1.classList.remove("checking");
+            div2.classList.remove("checking");
+            await swap(j, j + 1);
+          } else {
+            div1.classList.remove("checking");
+            div2.classList.remove("checking");
+          }
+        }
+      }
+    }
+
+    // Main greedy scheduling after sorting
+    async function startSequencing() {
+      result.innerText = "";
+      // Animate sorting by profit
+      await bubbleSortJobs();
+
+      const maxDeadline = Math.max(...jobs.map(job => job.deadline));
+      drawTimeline(maxDeadline);
+
+      let totalProfit = 0;
+      const slots = Array(maxDeadline).fill(false);
+
+      for (let i = 0; i < jobs.length; i++) {
+        const job = jobs[i];
+        const jobDiv = document.getElementById(`job-${i}`);
+
+        jobDiv.classList.add("checking");
+        await new Promise(r => setTimeout(r, 700));
+
+        // Find a free slot for job
+        let scheduled = false;
+        for (let j = job.deadline - 1; j >= 0; j--) {
+          if (!slots[j]) {
+            slots[j] = true;
+            scheduled = true;
+            jobDiv.classList.remove("checking");
+            jobDiv.classList.add("scheduled");
+
+            const slotDiv = document.getElementById(`slot-${j + 1}`);
+            slotDiv.classList.add("filled");
+            slotDiv.innerText = job.id;
+
+            totalProfit += job.profit;
+            break;
+          }
+        }
+
+        if (!scheduled) {
+          jobDiv.classList.remove("checking");
+          jobDiv.classList.add("skipped");
+        }
+
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      result.innerText = `Total Profit: ₹${totalProfit}`;
+    }
+
+    // Reset function
+    function reset() {
+      jobs = [
+        { id: 'J1', deadline: 2, profit: 100 },
+        { id: 'J2', deadline: 1, profit: 19 },
+        { id: 'J3', deadline: 2, profit: 27 },
+        { id: 'J4', deadline: 1, profit: 25 },
+        { id: 'J5', deadline: 3, profit: 15 }
+      ];
+      drawJobs();
+      drawTimeline(Math.max(...jobs.map(job => job.deadline)));
+      result.innerText = "";
+    }
+
+    // Initial draw
+    drawJobs();
+    drawTimeline(Math.max(...jobs.map(job => job.deadline)));
+  </script>
+</body>
+</html>

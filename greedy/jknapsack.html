@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Fractional Knapsack Visualizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    #items    { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .item {
+      width: 100px; padding: 8px;
+      border: 2px solid #444; border-radius: 6px;
+      transition: transform 0.3s, border-color 0.3s;
+      position: relative;
+    }
+    .item.sorting  { border-color: gold; }
+    .item.swapping { border-color: orange; }
+    .item.full     { background: lightgreen; }
+    .item.partial  { background: orange; }
+    .label { font-weight: bold; margin-bottom: 4px; }
+    .sub   { font-size: 12px; color: #333; }
+    #knap    { width: 300px; height: 24px; border:2px solid #444; margin: 0 auto; border-radius:4px; }
+    #fill    { width:0; height:100%; background: lightgreen; transition: width 0.5s ease; }
+    #result  { margin-top:20px; font-size:16px; font-weight:bold; }
+    button   { margin:10px; padding:6px 14px; font-size:14px; }
+  </style>
+</head>
+<body>
+
+  <button onclick="start()">Start</button>
+  <button onclick="reset()">Reset</button>
+
+  <div id="items"></div>
+  <div id="knap"><div id="fill"></div></div>
+  <div id="result"></div>
+
+<script>
+  const data = [
+    {name:'I1', p:60, w:10},
+    {name:'I2', p:100, w:20},
+    {name:'I3', p:120, w:30}
+  ];
+  const CAP = 50;
+  let items = [];
+
+  function reset(){
+    items = data.map(d=>({
+      ...d,
+      ratio: null,
+      taken: 0
+    }));
+    drawItems();
+    document.getElementById('fill').style.width = '0';
+    document.getElementById('result').textContent = '';
+  }
+
+  function drawItems(){
+    const c = document.getElementById('items');
+    c.innerHTML = '';
+    items.forEach((it,i)=>{
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.id = 'it-'+i;
+      div.innerHTML = `
+        <div class="label">${it.name}</div>
+        <div class="sub">P: ${it.p}</div>
+        <div class="sub">W: ${it.w}</div>
+        <div class="sub">R: ${it.ratio===null ? '—' : it.ratio.toFixed(2)}</div>
+        <div class="sub" id="tkn-${i}">T: 0%</div>
+      `;
+      c.appendChild(div);
+    });
+  }
+
+  function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  async function computeRatios(){
+    for(let i=0;i<items.length;i++){
+      items[i].ratio = items[i].p / items[i].w;
+      drawItems();
+      await delay(800);
+    }
+  }
+
+  async function bubbleSort(){
+    let n = items.length;
+    for(let i=0;i<n-1;i++){
+      for(let j=0;j<n-1-i;j++){
+        const A = document.getElementById('it-'+j),
+              B = document.getElementById('it-'+(j+1));
+        A.classList.add('sorting'); B.classList.add('sorting');
+        await delay(300);
+        if(items[j].ratio < items[j+1].ratio){
+          [items[j], items[j+1]] = [items[j+1], items[j]];
+          drawItems();
+          const A2=document.getElementById('it-'+j),
+                B2=document.getElementById('it-'+(j+1));
+          A2.classList.add('swapping'); B2.classList.add('swapping');
+          await delay(300);
+          A2.classList.remove('swapping'); B2.classList.remove('swapping');
+        }
+        A.classList.remove('sorting'); B.classList.remove('sorting');
+      }
+    }
+  }
+
+  async function fillKnapsack(){
+    let cap = CAP, total = 0;
+    for(let i=0;i<items.length;i++){
+      const it = items[i],
+            div = document.getElementById('it-'+i),
+            takenDiv = document.getElementById('tkn-'+i);
+      div.classList.add('sorting'); await delay(600);
+      div.classList.remove('sorting');
+
+      if(it.w <= cap){
+        it.taken = 1;
+        cap -= it.w;
+        total += it.p;
+        div.classList.add('full');
+      }
+      else if(cap > 0){
+        it.taken = cap / it.w;
+        total += it.p * it.taken;
+        cap = 0;
+        div.classList.add('partial');
+      }
+
+      // update fraction label
+      takenDiv.textContent = 'T: ' + Math.round(it.taken * 100) + '%';
+
+      // update knapsack fill bar
+      const pct = ((CAP - cap) / CAP) * 100;
+      document.getElementById('fill').style.width = pct + '%';
+      await delay(800);
+    }
+
+    document.getElementById('result').textContent =
+      `Total profit: ${total.toFixed(2)} | Capacity left: ${cap}`;
+  }
+
+  async function start(){
+    await computeRatios();
+    await bubbleSort();
+    await fillKnapsack();
+  }
+
+  reset();
+</script>
+
+</body>
+</html>

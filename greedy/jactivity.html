@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Activity Selection - Sorting & Selection</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      margin-top: 30px;
+    }
+    #container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+      transition: all 0.5s ease;
+    }
+    .activity {
+      width: 100px;
+      height: 60px;
+      background: steelblue;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      transition: background 0.5s, transform 0.5s;
+      user-select: none;
+    }
+    .selected {
+      background: green !important;
+      transform: scale(1.1);
+    }
+    .skipped {
+      background: crimson !important;
+      opacity: 0.6;
+    }
+    .checking {
+      background: orange !important;
+    }
+    .swapping {
+      background: darkorange !important;
+      transform: scale(1.2);
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: darkgreen;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="startSelection()">Start</button>
+  <button onclick="reset()">Reset</button>
+
+  <div id="container"></div>
+  <div id="result"></div>
+
+  <script>
+    let activities = [
+      { id: 1, start: 0, end: 6 },
+      { id: 2, start: 3, end: 5 },
+      { id: 3, start: 1, end: 2 },
+      { id: 4, start: 5, end: 9 },
+      { id: 5, start: 5, end: 7 },
+      { id: 6, start: 8, end: 9 }
+    ];
+
+    const container = document.getElementById("container");
+    const result = document.getElementById("result");
+
+    // Draw activities in current order
+    function draw() {
+      container.innerHTML = '';
+      activities.forEach((act, i) => {
+        const div = document.createElement('div');
+        div.className = 'activity';
+        div.id = `act-${i}`;
+        div.innerHTML = `A${act.id}<br>${act.start}-${act.end}`;
+        container.appendChild(div);
+      });
+    }
+
+    // Swap two activities in the array and update DOM positions
+    async function swap(i, j) {
+      // Visual highlight swap
+      const div1 = document.getElementById(`act-${i}`);
+      const div2 = document.getElementById(`act-${j}`);
+
+      div1.classList.add('swapping');
+      div2.classList.add('swapping');
+      await new Promise(r => setTimeout(r, 600));
+
+      // Swap in array
+      [activities[i], activities[j]] = [activities[j], activities[i]];
+      draw();
+
+      await new Promise(r => setTimeout(r, 600));
+    }
+
+    // Bubble sort with animation by end time
+    async function bubbleSort() {
+      let n = activities.length;
+      for (let i = 0; i < n-1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+          const div1 = document.getElementById(`act-${j}`);
+          const div2 = document.getElementById(`act-${j+1}`);
+          div1.classList.add('checking');
+          div2.classList.add('checking');
+
+          await new Promise(r => setTimeout(r, 500));
+
+          if (activities[j].end > activities[j+1].end) {
+            div1.classList.remove('checking');
+            div2.classList.remove('checking');
+            await swap(j, j+1);
+          } else {
+            div1.classList.remove('checking');
+            div2.classList.remove('checking');
+          }
+        }
+      }
+    }
+
+    // Start selection visualization after sorting
+    async function startSelection() {
+      result.innerText = '';
+      await bubbleSort();
+
+      let lastEnd = 0;
+      let selectedCount = 0;
+
+      for (let i = 0; i < activities.length; i++) {
+        const div = document.getElementById(`act-${i}`);
+
+        div.classList.add('checking');
+        await new Promise(r => setTimeout(r, 800));
+
+        if (activities[i].start >= lastEnd) {
+          div.classList.remove('checking');
+          div.classList.add('selected');
+          lastEnd = activities[i].end;
+          selectedCount++;
+        } else {
+          div.classList.remove('checking');
+          div.classList.add('skipped');
+        }
+
+        await new Promise(r => setTimeout(r, 400));
+      }
+
+      result.innerText = `Selected: ${selectedCount}`;
+    }
+
+    // Reset dataset & UI
+    function reset() {
+      activities = [
+        { id: 1, start: 0, end: 6 },
+        { id: 2, start: 3, end: 5 },
+        { id: 3, start: 1, end: 2 },
+        { id: 4, start: 5, end: 9 },
+        { id: 5, start: 5, end: 7 },
+        { id: 6, start: 8, end: 9 }
+      ];
+      draw();
+      result.innerText = '';
+    }
+
+    draw();
+  </script>
+</body>
+</html>

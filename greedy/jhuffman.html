@@ -1,147 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Huffman Coding Visualizer</title>
-<style>
-  body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-  #nodesContainer { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-  .node {
-    width:70px; height:70px;
-    background:steelblue; color:white;
-    border-radius:50%; display:flex;
-    flex-direction:column; justify-content:center;
-    font-weight:bold; font-size:14px;
-    transition:background-color 0.3s ease;
-  }
-  .sorting { background: gold !important; }
-  .merging { background: orange !important; }
-  .merged  { background: green  !important; }
-  #treeArea { margin-top:30px; text-align:left; max-width:700px; margin:0 auto; }
-  #codes   { margin-top:40px; font-size:18px; font-weight:bold; }
-  button   { margin:15px; padding:10px 18px; font-size:16px; cursor:pointer; }
-</style>
+  <meta charset="UTF-8" />
+  <title>Huffman Coding Visualizer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0.4rem;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      margin: 0.4rem 0;
+      font-size: 1.1rem;
+    }
+    #controls {
+      margin-bottom: 0.4rem;
+    }
+    #inputText {
+      padding: 3px;
+      font-size: 0.85rem;
+      width: 160px;
+    }
+    button {
+      padding: 3px 7px;
+      font-size: 0.85rem;
+      margin-left: 0.25rem;
+      cursor: pointer;
+    }
+    #treeCanvas {
+      background: #fff;
+      border: 1px solid #ccc;
+      display: block;
+      margin: 0 auto;
+      margin-top: 0.4rem;
+    }
+    .code-table {
+      margin-top: 0.4rem;
+      display: inline-block;
+      text-align: left;
+      font-size: 11px;
+    }
+    .code-table th, .code-table td {
+      padding: 2px 5px;
+      border: 1px solid #ddd;
+    }
+  </style>
 </head>
 <body>
 
-<button onclick="startVisual()">Start Visualization</button>
-<button onclick="reset()">Reset</button>
+<h1>Huffman Visualizer</h1>
 
-<div id="nodesContainer"></div>
-<div id="treeArea"></div>
-<div id="codes"></div>
+<div id="controls">
+  <input type="text" id="inputText" placeholder="Enter text..." />
+  <button onclick="startHuffman()">Generate</button>
+  <button onclick="resetVisualizer()">Reset</button>
+</div>
+
+<canvas id="treeCanvas" width="400" height="280"></canvas>
+
+<div class="code-table" id="codeTable"></div>
 
 <script>
-  const nodesData = [
-    {char:'A',freq:5},
-    {char:'B',freq:9},
-    {char:'C',freq:12},
-    {char:'D',freq:13},
-    {char:'E',freq:16},
-    {char:'F',freq:45}
-  ];
-
-  const nodesContainer = document.getElementById('nodesContainer');
-  const treeArea       = document.getElementById('treeArea');
-  const codesArea      = document.getElementById('codes');
-  let forest = [];
-
-  function createTreeNode(char,f,left=null,right=null){
-    return {char,freq:f,left,right};
-  }
-
-  function drawNodes(){
-    nodesContainer.innerHTML = '';
-    forest.forEach((n,i)=>{
-      const d=document.createElement('div');
-      d.className='node'; d.id='node-'+i;
-      d.innerHTML=`<div>${n.char||''}</div><div>${n.freq}</div>`;
-      nodesContainer.appendChild(d);
-    });
-  }
-
-  function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-  async function bubbleSortForest(){
-    let n = forest.length;
-    for(let i=0;i<n-1;i++){
-      for(let j=0;j<n-1-i;j++){
-        const dj  = document.getElementById('node-'+j),
-              dj1 = document.getElementById('node-'+(j+1));
-        dj.classList.add('sorting');
-        dj1.classList.add('sorting');
-        await delay(400);
-        if(forest[j].freq > forest[j+1].freq){
-          [forest[j],forest[j+1]]=[forest[j+1],forest[j]];
-          drawNodes();
-          await delay(400);
-        }
-        dj.classList.remove('sorting');
-        dj1.classList.remove('sorting');
-      }
+  class Node {
+    constructor(char, freq, left = null, right = null) {
+      this.char = char;
+      this.freq = freq;
+      this.left = left;
+      this.right = right;
     }
   }
 
-  async function buildHuffmanTree(){
-    while(forest.length>1){
-      // 1) Sort
-      await bubbleSortForest();
+  function getFrequencies(str) {
+    const freq = {};
+    for (const ch of str) {
+      if (ch === ' ') continue;
+      freq[ch] = (freq[ch] || 0) + 1;
+    }
+    return freq;
+  }
 
-      // 2) Merge highlight
-      const n1=document.getElementById('node-0'),
-            n2=document.getElementById('node-1');
-      n1.classList.add('merging');
-      n2.classList.add('merging');
-      await delay(1000);
+  function buildHuffmanTree(freq) {
+    const nodes = Object.entries(freq).map(([char, f]) => new Node(char, f));
+    while (nodes.length > 1) {
+      nodes.sort((a, b) => a.freq - b.freq);
+      const left = nodes.shift();
+      const right = nodes.shift();
+      const newNode = new Node(null, left.freq + right.freq, left, right);
+      nodes.push(newNode);
+    }
+    return nodes[0];
+  }
 
-      // 3) Merge nodes
-      const left=forest.shift(), right=forest.shift();
-      const merged=createTreeNode(null,left.freq+right.freq,left,right);
-      forest.unshift(merged);
-      drawNodes();
+  function generateCodes(node, prefix = '', codes = {}) {
+    if (!node.left && !node.right) {
+      codes[node.char] = prefix;
+      return codes;
+    }
+    if (node.left) generateCodes(node.left, prefix + '0', codes);
+    if (node.right) generateCodes(node.right, prefix + '1', codes);
+    return codes;
+  }
 
-      // 4) Merged flash
-      const m=document.getElementById('node-0');
-      m.classList.add('merged');
-      await delay(1000);
-      m.classList.remove('merged');
-      n1.classList.remove('merging');
-      n2.classList.remove('merging');
+  function drawTree(ctx, node, x, y, dx, dy) {
+    if (!node) return;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = node.char ? "#4caf50" : "#2196f3";
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "9px Arial";
+    ctx.fillText(node.char ? `${node.char}:${node.freq}` : node.freq, x, y);
+
+    if (node.left) {
+      const lx = x - dx;
+      const ly = y + dy;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(lx, ly);
+      ctx.stroke();
+      drawTree(ctx, node.left, lx, ly, dx * 0.6, dy);
+    }
+
+    if (node.right) {
+      const rx = x + dx;
+      const ry = y + dy;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(rx, ry);
+      ctx.stroke();
+      drawTree(ctx, node.right, rx, ry, dx * 0.6, dy);
     }
   }
 
-  function getCodes(n,path='',out={}) {
-    if(!n) return;
-    if(n.char) out[n.char]=path||'0';
-    getCodes(n.left, path+'0', out);
-    getCodes(n.right,path+'1', out);
-    return out;
-  }
-
-  function displayCodes(codes){
-    codesArea.innerHTML='<h3>Huffman Codes:</h3>';
-    for(let c in codes){
-      const d=document.createElement('div');
-      d.textContent=`${c} : ${codes[c]}`;
-      codesArea.appendChild(d);
+  function showCodeTable(codes) {
+    const table = document.getElementById("codeTable");
+    table.innerHTML = "<h3>Codes</h3>";
+    const tbl = document.createElement("table");
+    const head = document.createElement("tr");
+    head.innerHTML = "<th>Char</th><th>Code</th>";
+    tbl.appendChild(head);
+    for (const [ch, code] of Object.entries(codes)) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${ch}</td><td>${code}</td>`;
+      tbl.appendChild(row);
     }
+    table.appendChild(tbl);
   }
 
-  async function startVisual(){
-    treeArea.innerHTML=''; codesArea.innerHTML='';
-    await buildHuffmanTree();
-    const codes = getCodes(forest[0]);
-    displayCodes(codes);
+  function startHuffman() {
+    const input = document.getElementById("inputText").value;
+    if (!input.trim()) return;
+
+    const freq = getFrequencies(input);
+    const root = buildHuffmanTree(freq);
+    const codes = generateCodes(root);
+
+    const canvas = document.getElementById("treeCanvas");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawTree(ctx, root, canvas.width / 2, 25, 60, 40);
+    showCodeTable(codes);
   }
 
-  function reset(){
-    forest = nodesData.map(n=>createTreeNode(n.char,n.freq));
-    drawNodes();
-    treeArea.innerHTML=''; codesArea.innerHTML='';
+  function resetVisualizer() {
+    document.getElementById("inputText").value = "";
+    document.getElementById("codeTable").innerHTML = "";
+    const canvas = document.getElementById("treeCanvas");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
-
-  // initialize
-  reset();
 </script>
 
 </body>

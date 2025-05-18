@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dijkstra's Algorithm Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    #grid {
+      display: grid;
+      gap: 2px;
+    }
+    .cell {
+      width: 25px;
+      height: 25px;
+      background-color: #eee;
+      border-radius: 4px;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .cell.wall {
+      background-color: #444;
+      cursor: not-allowed;
+    }
+    .cell.start {
+      background-color: #4caf50;
+    }
+    .cell.end {
+      background-color: #f44336;
+    }
+    .cell.visited {
+      background-color: #2196f3;
+      transition: background-color 0.2s ease;
+    }
+    .cell.path {
+      background-color: #ffeb3b;
+    }
+    #controls {
+      margin-top: 1rem;
+    }
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+<div id="grid"></div>
+
+<div id="controls">
+  <button id="startBtn">Start</button>
+  <button id="clearBtn">Reset</button>
+</div>
+
+<script>
+  const ROWS = 15;
+  const fullCOLS = 25;
+  const start = [7, 5];
+  const end = [7, 19];
+
+  // Only include columns from start.col to end.col
+  const minCol = Math.min(start[1], end[1]);
+  const maxCol = Math.max(start[1], end[1]);
+  const COLS = maxCol - minCol + 1;
+
+  const gridContainer = document.getElementById('grid');
+  const startBtn = document.getElementById('startBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  let grid = [];
+
+  function createGrid() {
+    gridContainer.innerHTML = '';
+    grid = [];
+
+    gridContainer.style.gridTemplateColumns = `repeat(${COLS}, 25px)`;
+    gridContainer.style.gridTemplateRows = `repeat(${ROWS}, 25px)`;
+
+    for (let r = 0; r < ROWS; r++) {
+      const row = [];
+      for (let c = minCol; c <= maxCol; c++) {
+        const cell = {
+          row: r,
+          col: c,
+          isWall: false,
+          distance: Infinity,
+          prev: null,
+        };
+        row.push(cell);
+
+        const div = document.createElement('div');
+        div.classList.add('cell');
+        div.id = `cell-${r}-${c}`;
+
+        if (r === start[0] && c === start[1]) {
+          div.classList.add('start');
+        } else if (r === end[0] && c === end[1]) {
+          div.classList.add('end');
+        }
+
+        div.addEventListener('click', () => {
+          if ((r === start[0] && c === start[1]) || (r === end[0] && c === end[1])) return;
+          cell.isWall = !cell.isWall;
+          div.classList.toggle('wall');
+        });
+
+        gridContainer.appendChild(div);
+      }
+      grid.push(row);
+    }
+  }
+
+  function dijkstra(grid, start, end) {
+    const visitedOrder = [];
+    const pq = [];
+    const visited = new Set();
+    const startCell = grid[start[0]][start[1] - minCol];
+    startCell.distance = 0;
+    pq.push({ row: start[0], col: start[1], dist: 0 });
+
+    while (pq.length) {
+      pq.sort((a, b) => a.dist - b.dist);
+      const { row: r, col: c, dist } = pq.shift();
+      if (visited.has(`${r},${c}`) || grid[r][c - minCol].isWall) continue;
+      visited.add(`${r},${c}`);
+      visitedOrder.push([r, c]);
+      if (r === end[0] && c === end[1]) break;
+
+      for (const [dr, dc] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+        const nr = r + dr;
+        const nc = c + dc;
+        if (
+          nr >= 0 && nr < ROWS &&
+          nc >= minCol && nc <= maxCol &&
+          !visited.has(`${nr},${nc}`) &&
+          !grid[nr][nc - minCol].isWall
+        ) {
+          const alt = grid[r][c - minCol].distance + 1;
+          if (alt < grid[nr][nc - minCol].distance) {
+            grid[nr][nc - minCol].distance = alt;
+            grid[nr][nc - minCol].prev = grid[r][c - minCol];
+            pq.push({ row: nr, col: nc, dist: alt });
+          }
+        }
+      }
+    }
+
+    let path = [];
+    let cell = grid[end[0]][end[1] - minCol];
+    if (!cell.prev && (end[0] !== start[0] || end[1] !== start[1])) {
+      return { visitedOrder, path: [] };
+    }
+    while (cell.prev) {
+      path.push([cell.row, cell.col]);
+      cell = cell.prev;
+    }
+    return { visitedOrder, path: path.reverse() };
+  }
+
+  async function visualizeDijkstra() {
+    startBtn.disabled = true;
+    clearBtn.disabled = true;
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        grid[r][c - minCol].distance = Infinity;
+        grid[r][c - minCol].prev = null;
+      }
+    }
+
+    const { visitedOrder, path } = dijkstra(grid, start, end);
+
+    for (let [r, c] of visitedOrder) {
+      if ((r === start[0] && c === start[1]) || (r === end[0] && c === end[1])) continue;
+      const cellDiv = document.getElementById(`cell-${r}-${c}`);
+      cellDiv.classList.add('visited');
+      await sleep(20);
+    }
+
+    if (path.length === 0) {
+      alert('No path found!');
+    } else {
+      for (let [r, c] of path) {
+        if ((r === start[0] && c === start[1]) || (r === end[0] && c === end[1])) continue;
+        const cellDiv = document.getElementById(`cell-${r}-${c}`);
+        cellDiv.classList.remove('visited');
+        cellDiv.classList.add('path');
+        await sleep(50);
+      }
+    }
+
+    startBtn.disabled = false;
+    clearBtn.disabled = false;
+  }
+
+  function clearGrid() {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        const cell = grid[r][c - minCol];
+        cell.isWall = false;
+        cell.distance = Infinity;
+        cell.prev = null;
+        const cellDiv = document.getElementById(`cell-${r}-${c}`);
+        cellDiv.className = 'cell';
+        if (r === start[0] && c === start[1]) {
+          cellDiv.classList.add('start');
+        } else if (r === end[0] && c === end[1]) {
+          cellDiv.classList.add('end');
+        }
+      }
+    }
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  createGrid();
+  startBtn.addEventListener('click', visualizeDijkstra);
+  clearBtn.addEventListener('click', clearGrid);
+</script>
+
+</body>
+</html>

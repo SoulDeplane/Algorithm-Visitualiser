@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kruskal's Algorithm Visualizer Step-by-Step</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #controls {
+      margin-bottom: 10px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      margin: 0 8px;
+      cursor: pointer;
+    }
+    svg {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+    .node {
+      fill: steelblue;
+    }
+    .edge {
+      stroke: gray;
+      stroke-width: 2;
+      transition: stroke 0.3s, stroke-width 0.3s;
+    }
+    .highlight {
+      stroke: orange;
+      stroke-width: 4;
+    }
+    .mst {
+      stroke: #4CAF50;
+      stroke-width: 4;
+    }
+    .rejected {
+      stroke: #ccc;
+      stroke-width: 2;
+      stroke-dasharray: 4;
+    }
+    #edgeList {
+      margin-top: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      font-size: 16px;
+      min-height: 120px;
+    }
+    #edgeList li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s, font-weight 0.3s;
+      cursor: default;
+    }
+    #edgeList li.highlighted {
+      background-color: orange;
+      font-weight: bold;
+      color: white;
+    }
+    #edgeList li.mst {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+    }
+    #edgeList li.rejected {
+      color: #999;
+      text-decoration: line-through;
+    }
+    h2 {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <button id="startBtn">Start</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <svg id="graph" width="360" height="180"></svg>
+
+  <ul id="edgeList"></ul>
+
+  <script>
+    const nodes = [
+      { id: 0, x: 60,  y: 70 },
+      { id: 1, x: 180, y: 40 },
+      { id: 2, x: 300, y: 70 },
+      { id: 3, x: 100, y: 140 },
+      { id: 4, x: 260, y: 140 }
+    ];
+
+    const edges = [
+      { u: 0, v: 1, weight: 10 },
+      { u: 0, v: 3, weight: 6 },
+      { u: 0, v: 2, weight: 5 },
+      { u: 1, v: 2, weight: 15 },
+      { u: 2, v: 4, weight: 4 },
+      { u: 3, v: 4, weight: 11 }
+    ];
+
+    const svg = document.getElementById("graph");
+    const edgeListUL = document.getElementById("edgeList");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    let edgeElements = [];
+    let parent = [];
+
+    function find(i) {
+      if (parent[i] !== i) {
+        parent[i] = find(parent[i]);
+      }
+      return parent[i];
+    }
+
+    function union(x, y) {
+      parent[find(x)] = find(y);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function drawGraph() {
+      svg.innerHTML = '';
+      edgeListUL.innerHTML = '';
+      edgeElements = [];
+
+      nodes.forEach(n => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", n.x);
+        circle.setAttribute("cy", n.y);
+        circle.setAttribute("r", 14);
+        circle.setAttribute("class", "node");
+        svg.appendChild(circle);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", n.x);
+        label.setAttribute("y", n.y + 4);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "white");
+        label.setAttribute("font-size", "12px");
+        label.textContent = n.id;
+        svg.appendChild(label);
+      });
+
+      edges.forEach(e => {
+        const n1 = nodes[e.u], n2 = nodes[e.v];
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", n1.x);
+        line.setAttribute("y1", n1.y);
+        line.setAttribute("x2", n2.x);
+        line.setAttribute("y2", n2.y);
+        line.setAttribute("class", "edge");
+        svg.appendChild(line);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (n1.x + n2.x) / 2);
+        label.setAttribute("y", (n1.y + n2.y) / 2 - 5);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "black");
+        label.setAttribute("font-size", "10px");
+        label.textContent = e.weight;
+        svg.appendChild(label);
+
+        edgeElements.push({ line, label, edge: e, listItem: null });
+      });
+    }
+
+    async function startKruskal() {
+      startBtn.disabled = true;
+      resetBtn.disabled = true;
+
+      parent = Array.from({ length: nodes.length }, (_, i) => i);
+      edgeListUL.innerHTML = '';
+
+      for (let i = 0; i < edgeElements.length; i++) {
+        let e = edgeElements[i];
+        e.line.classList.add("highlight");
+
+        await sleep(1200);
+
+        const li = document.createElement("li");
+        li.textContent = `(${e.edge.u}, ${e.edge.v}) : weight = ${e.edge.weight}`;
+        edgeListUL.appendChild(li);
+        e.listItem = li;
+
+        e.line.classList.remove("highlight");
+        await sleep(300);
+      }
+
+      edgeElements.sort((a, b) => a.edge.weight - b.edge.weight);
+
+      edgeListUL.innerHTML = '';
+      edgeElements.forEach(e => {
+        edgeListUL.appendChild(e.listItem);
+      });
+
+      await sleep(1200);
+
+      for (const e of edgeElements) {
+        e.line.classList.add("highlight");
+        e.listItem.classList.add("highlighted");
+
+        await sleep(1500);
+
+        if (find(e.edge.u) !== find(e.edge.v)) {
+          union(e.edge.u, e.edge.v);
+          e.line.classList.remove("highlight");
+          e.line.classList.add("mst");
+          e.listItem.classList.remove("highlighted");
+          e.listItem.classList.add("mst");
+        } else {
+          e.line.classList.remove("highlight");
+          e.line.classList.add("rejected");
+          e.listItem.classList.remove("highlighted");
+          e.listItem.classList.add("rejected");
+        }
+
+        await sleep(1000);
+      }
+
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+    }
+
+    function reset() {
+      drawGraph();
+      edgeListUL.innerHTML = '';
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+    }
+
+    drawGraph();
+    startBtn.addEventListener("click", startKruskal);
+    resetBtn.addEventListener("click", reset);
+  </script>
+</body>
+</html>

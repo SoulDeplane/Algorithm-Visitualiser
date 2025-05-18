@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prim's Algorithm Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      margin: 0 8px;
+      cursor: pointer;
+    }
+    svg {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+    .node {
+      fill: steelblue;
+      transition: fill 0.3s, r 0.3s;
+    }
+    .visited {
+      fill: #2196F3;
+      animation: glow 1s ease-in-out;
+    }
+    @keyframes glow {
+      0% { fill: #2196F3; r: 16; }
+      50% { fill: #64B5F6; r: 20; }
+      100% { fill: #2196F3; r: 16; }
+    }
+
+    .edge {
+      stroke: gray;
+      stroke-width: 2;
+      transition: stroke 0.3s, stroke-width 0.3s;
+    }
+    .highlight {
+      stroke: orange;
+      stroke-width: 4;
+    }
+    .pulse {
+      animation: pulseEdge 1s ease-in-out;
+    }
+    @keyframes pulseEdge {
+      0% { stroke-width: 2; stroke: orange; }
+      50% { stroke-width: 6; stroke: #FFA726; }
+      100% { stroke-width: 2; stroke: orange; }
+    }
+    .mst {
+      stroke: #4CAF50;
+      stroke-width: 4;
+    }
+    #edgeList {
+      margin-top: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      font-size: 16px;
+      min-height: 100px;
+    }
+    #edgeList li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.3s, font-weight 0.3s;
+    }
+    #edgeList li.highlighted {
+      background-color: orange;
+      font-weight: bold;
+      color: white;
+    }
+    #edgeList li.mst {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <button id="startBtn">Start</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <svg id="graph" width="360" height="180"></svg>
+
+  <ul id="edgeList"></ul>
+
+  <script>
+    const nodes = [
+      { id: 0, x: 60,  y: 70 },
+      { id: 1, x: 180, y: 40 },
+      { id: 2, x: 300, y: 70 },
+      { id: 3, x: 100, y: 140 },
+      { id: 4, x: 260, y: 140 }
+    ];
+
+    const edges = [
+      { u: 0, v: 1, weight: 10 },
+      { u: 0, v: 3, weight: 6 },
+      { u: 0, v: 2, weight: 5 },
+      { u: 1, v: 2, weight: 15 },
+      { u: 2, v: 4, weight: 4 },
+      { u: 3, v: 4, weight: 11 }
+    ];
+
+    const svg = document.getElementById("graph");
+    const edgeListUL = document.getElementById("edgeList");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    let edgeElements = [];
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function drawGraph() {
+      svg.innerHTML = '';
+      edgeListUL.innerHTML = '';
+      edgeElements = [];
+
+      // Nodes
+      nodes.forEach(n => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", n.x);
+        circle.setAttribute("cy", n.y);
+        circle.setAttribute("r", 16);
+        circle.setAttribute("class", "node");
+        svg.appendChild(circle);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", n.x);
+        label.setAttribute("y", n.y + 5);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "white");
+        label.setAttribute("font-size", "14px");
+        label.textContent = n.id;
+        svg.appendChild(label);
+      });
+
+      // Edges
+      edges.forEach(e => {
+        const n1 = nodes[e.u], n2 = nodes[e.v];
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", n1.x);
+        line.setAttribute("y1", n1.y);
+        line.setAttribute("x2", n2.x);
+        line.setAttribute("y2", n2.y);
+        line.setAttribute("class", "edge");
+        svg.appendChild(line);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (n1.x + n2.x) / 2);
+        label.setAttribute("y", (n1.y + n2.y) / 2 - 5);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "black");
+        label.setAttribute("font-size", "12px");
+        label.textContent = e.weight;
+        svg.appendChild(label);
+
+        edgeElements.push({ line, label, edge: e });
+      });
+    }
+
+    async function startPrim() {
+      startBtn.disabled = true;
+      resetBtn.disabled = true;
+
+      let visited = new Set();
+      visited.add(0);
+      let mstEdges = [];
+
+      // Animate the starting node
+      const startCircle = svg.querySelectorAll("circle")[0];
+      startCircle.classList.add("visited");
+
+      const allEdges = [...edgeElements];
+
+      while (visited.size < nodes.length) {
+        let candidates = allEdges.filter(e => 
+          (visited.has(e.edge.u) && !visited.has(e.edge.v)) ||
+          (visited.has(e.edge.v) && !visited.has(e.edge.u))
+        );
+
+        candidates.sort((a, b) => a.edge.weight - b.edge.weight);
+        const e = candidates[0];
+
+        // Pulse animation for candidate
+        e.line.classList.add("pulse");
+        await sleep(1000);
+        e.line.classList.remove("pulse");
+
+        // Final selection
+        e.line.classList.add("highlight");
+
+        const li = document.createElement("li");
+        li.textContent = `(${e.edge.u}, ${e.edge.v}) : weight = ${e.edge.weight}`;
+        li.classList.add("highlighted");
+        edgeListUL.appendChild(li);
+
+        await sleep(1000);
+
+        e.line.classList.remove("highlight");
+        e.line.classList.add("mst");
+        li.classList.remove("highlighted");
+        li.classList.add("mst");
+
+        // Animate visited node
+        const nodeToAnimate = !visited.has(e.edge.u) ? e.edge.u : e.edge.v;
+        const circle = svg.querySelectorAll("circle")[nodeToAnimate];
+        circle.classList.add("visited");
+
+        visited.add(e.edge.u);
+        visited.add(e.edge.v);
+        mstEdges.push(e);
+
+        await sleep(500);
+      }
+
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+    }
+
+    function reset() {
+      drawGraph();
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+    }
+
+    drawGraph();
+    startBtn.addEventListener("click", startPrim);
+    resetBtn.addEventListener("click", reset);
+  </script>
+</body>
+</html>

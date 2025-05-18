@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bellman-Ford Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      margin: 0 8px;
+      cursor: pointer;
+    }
+    input[type=text] {
+      font-size: 16px;
+      padding: 6px 10px;
+      width: 60px;
+      text-align: center;
+      margin-right: 8px;
+    }
+    svg {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+    .node {
+      fill: steelblue;
+      transition: fill 0.4s ease, r 0.4s ease;
+    }
+    .edge {
+      stroke: gray;
+      stroke-width: 2;
+      transition: stroke 0.4s ease, stroke-width 0.4s ease;
+    }
+    .highlight {
+      stroke: orange;
+      stroke-width: 4;
+    }
+    .updated {
+      fill: #4CAF50;
+      r: 20;
+      transition: r 0.5s ease, fill 0.5s ease;
+      animation: pulseNode 0.8s ease-in-out forwards;
+    }
+    @keyframes pulseNode {
+      0% { r: 16; fill: #4CAF50; }
+      50% { r: 22; fill: #81C784; }
+      100% { r: 16; fill: #4CAF50; }
+    }
+    #resultList {
+      max-width: 300px;
+      margin: 20px auto;
+      font-size: 16px;
+      text-align: left;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      min-height: 120px;
+    }
+    #resultList h3 {
+      margin-top: 0;
+      font-weight: bold;
+      text-align: center;
+    }
+    #resultList ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+    #inputSection {
+      margin-bottom: 12px;
+    }
+    #errorMsg {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      height: 20px;
+    }
+    .edge-arrow {
+      fill: gray;
+      transition: fill 0.4s ease;
+    }
+    .highlight-arrow {
+      fill: orange;
+    }
+  </style>
+</head>
+<body>
+  <div id="inputSection">
+    <label for="startNode">Enter node: </label>
+    <input type="text" id="startNode" value="0" />
+  </div>
+
+  <div>
+    <button id="startBtn">Start</button>
+    <button id="resetBtn" disabled>Reset</button>
+  </div>
+
+  <div id="errorMsg"></div>
+
+  <svg id="graph" width="360" height="180"></svg>
+
+  <div id="resultList">
+    <h3>Minimum distances</h3>
+    <ul id="distList"></ul>
+  </div>
+
+  <script>
+    const nodes = [
+      { id: 0, x: 60, y: 70 },
+      { id: 1, x: 180, y: 40 },
+      { id: 2, x: 300, y: 70 },
+      { id: 3, x: 100, y: 140 },
+      { id: 4, x: 260, y: 140 }
+    ];
+
+    const edges = [
+      { u: 0, v: 1, weight: 6 },
+      { u: 0, v: 2, weight: 7 },
+      { u: 1, v: 2, weight: 8 },
+      { u: 1, v: 3, weight: 5 },
+      { u: 1, v: 4, weight: -4 },
+      { u: 2, v: 3, weight: -3 },
+      { u: 2, v: 4, weight: 9 },
+      { u: 3, v: 1, weight: -2 },
+      { u: 4, v: 3, weight: 7 }
+    ];
+
+    const svg = document.getElementById("graph");
+    const distList = document.getElementById("distList");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const startNodeInput = document.getElementById("startNode");
+    const errorMsg = document.getElementById("errorMsg");
+
+    let dist = [];
+    let edgeElements = [];
+    let sourceNode = 0;
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function drawGraph() {
+      svg.innerHTML = '';
+      distList.innerHTML = '';
+      edgeElements = [];
+      dist = Array(nodes.length).fill(Infinity);
+      dist[sourceNode] = 0;
+
+      // Draw nodes with fixed node ids inside
+      nodes.forEach(n => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", n.x);
+        circle.setAttribute("cy", n.y);
+        circle.setAttribute("r", 16);
+        circle.setAttribute("class", "node");
+        svg.appendChild(circle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", n.x);
+        text.setAttribute("y", n.y + 5);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("fill", "white");
+        text.setAttribute("font-size", "14px");
+        // Node label = node id (fixed, no distance here)
+        text.textContent = n.id;
+        svg.appendChild(text);
+      });
+
+      // Draw edges and arrows with offset arrow tips
+      const nodeRadius = 16;
+      const arrowLength = 12;
+      const arrowWidth = 8;
+
+      edges.forEach(e => {
+        const n1 = nodes[e.u], n2 = nodes[e.v];
+
+        // Draw edge line shortened so it doesn't go inside the node circle
+        const dx = n2.x - n1.x;
+        const dy = n2.y - n1.y;
+        const distNodes = Math.sqrt(dx * dx + dy * dy);
+
+        // Unit vector from n1 to n2
+        const ux = dx / distNodes;
+        const uy = dy / distNodes;
+
+        // Start point moved away from source node by radius (optional, but you can keep line full length if you want)
+        const startX = n1.x + ux * nodeRadius;
+        const startY = n1.y + uy * nodeRadius;
+
+        // End point moved back from target node by radius
+        const endX = n2.x - ux * nodeRadius;
+        const endY = n2.y - uy * nodeRadius;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", startX);
+        line.setAttribute("y1", startY);
+        line.setAttribute("x2", endX);
+        line.setAttribute("y2", endY);
+        line.setAttribute("class", "edge");
+        svg.appendChild(line);
+
+        // Draw arrowhead at the end with offset (same endX, endY)
+        const angle = Math.atan2(dy, dx);
+        const arrowPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const arrowShape = `M0,0 L${-arrowLength},${arrowWidth / 2} L${-arrowLength},${-arrowWidth / 2} Z`;
+        arrowPath.setAttribute("d", arrowShape);
+        arrowPath.setAttribute("transform", `translate(${endX},${endY}) rotate(${angle * 180 / Math.PI})`);
+        arrowPath.setAttribute("class", "edge-arrow");
+        svg.appendChild(arrowPath);
+
+        // Edge weight label at midpoint between nodes, shifted a bit above
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (n1.x + n2.x) / 2);
+        label.setAttribute("y", (n1.y + n2.y) / 2 - 5);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "black");
+        label.setAttribute("font-size", "12px");
+        label.textContent = e.weight;
+        svg.appendChild(label);
+
+        edgeElements.push({ edge: e, line, arrowPath });
+      });
+
+      updateDistanceList();
+      resetBtn.disabled = false;
+      errorMsg.textContent = '';
+    }
+
+    function updateDistanceList() {
+      distList.innerHTML = '';
+      dist.forEach((d, i) => {
+        const li = document.createElement('li');
+        li.textContent = `Node ${i}: ${d === Infinity ? "∞" : d}`;
+        distList.appendChild(li);
+      });
+    }
+
+    async function startBellmanFord() {
+      const val = startNodeInput.value.trim();
+      const startNum = Number(val);
+      if (!Number.isInteger(startNum) || startNum < 0 || startNum >= nodes.length) {
+        errorMsg.textContent = `Please enter a valid start node between 0 and ${nodes.length - 1}.`;
+        return;
+      }
+
+      sourceNode = startNum;
+      errorMsg.textContent = '';
+      startBtn.disabled = true;
+      resetBtn.disabled = true;
+      startNodeInput.disabled = true;
+
+      drawGraph();
+
+      for (let i = 1; i < nodes.length; i++) {
+        let anyUpdate = false;
+
+        for (const { edge, line, arrowPath } of edgeElements) {
+          const { u, v, weight } = edge;
+
+          line.classList.add("highlight");
+          arrowPath.classList.add("highlight-arrow");
+          await sleep(400);
+
+          if (dist[u] !== Infinity && dist[u] + weight < dist[v]) {
+            dist[v] = dist[u] + weight;
+
+            const circle = svg.querySelectorAll("circle")[v];
+            circle.classList.add("updated");
+            await sleep(700);
+            circle.classList.remove("updated");
+
+            anyUpdate = true;
+            updateDistanceList();
+          }
+
+          line.classList.remove("highlight");
+          arrowPath.classList.remove("highlight-arrow");
+          await sleep(200);
+        }
+
+        if (!anyUpdate) break;
+      }
+
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+      startNodeInput.disabled = false;
+    }
+
+    function reset() {
+  errorMsg.textContent = '';
+  startNodeInput.value = "0";  // Reset input field to 0
+  drawGraph();
+  startBtn.disabled = false;
+  resetBtn.disabled = true;
+  startNodeInput.disabled = false;
+}
+
+
+    startBtn.addEventListener("click", startBellmanFord);
+    resetBtn.addEventListener("click", reset);
+
+    // Initial draw with default sourceNode = 0
+    drawGraph();
+  </script>
+</body>
+</html>

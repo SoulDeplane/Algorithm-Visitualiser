@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Floyd-Warshall Algorithm Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 8px 16px;
+      margin: 0 8px;
+      cursor: pointer;
+    }
+    svg {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      background-color: #f9f9f9;
+    }
+    .node {
+      fill: steelblue;
+      transition: fill 0.4s ease, r 0.4s ease;
+    }
+    .edge {
+      stroke: gray;
+      stroke-width: 2;
+      marker-end: url(#arrow);
+      transition: stroke 0.4s ease, stroke-width 0.4s ease;
+    }
+    .highlight-edge {
+      stroke: orange;
+      stroke-width: 4;
+    }
+    .highlight-cell {
+      background-color: #ffe599;
+      transition: background-color 0.5s ease;
+    }
+    #distanceMatrix {
+      margin: 20px auto;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+    #distanceMatrix td, #distanceMatrix th {
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    #distanceMatrix th {
+      background-color: #eee;
+    }
+    #inputSection {
+      margin-bottom: 12px;
+    }
+    #errorMsg {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="inputSection">
+    <button id="startBtn">Start</button>
+    <button id="resetBtn" disabled>Reset</button>
+  </div>
+
+  <div id="errorMsg"></div>
+
+  <svg id="graph" width="360" height="180">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="gray" />
+      </marker>
+    </defs>
+  </svg>
+
+  <div>
+    <table id="distanceMatrix"></table>
+  </div>
+
+  <script>
+    const nodes = [
+      { id: 0, x: 60, y: 70 },
+      { id: 1, x: 180, y: 40 },
+      { id: 2, x: 300, y: 70 },
+      { id: 3, x: 100, y: 140 },
+      { id: 4, x: 260, y: 140 }
+    ];
+
+    const edges = [
+      { u: 0, v: 1, weight: 6 },
+      { u: 0, v: 2, weight: 7 },
+      { u: 1, v: 2, weight: 8 },
+      { u: 1, v: 3, weight: 5 },
+      { u: 1, v: 4, weight: -4 },
+      { u: 2, v: 3, weight: -3 },
+      { u: 2, v: 4, weight: 9 },
+      { u: 3, v: 1, weight: -2 },
+      { u: 4, v: 3, weight: 7 }
+    ];
+
+    const svg = document.getElementById("graph");
+    const distMatrixTable = document.getElementById("distanceMatrix");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const errorMsg = document.getElementById("errorMsg");
+
+    let dist = [];
+    let edgeElements = [];
+
+    // Utility sleep function for visualization delay
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function shortenLine(x1, y1, x2, y2, r) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const ratio = (dist - r) / dist;
+      const newX2 = x1 + dx * ratio;
+      const newY2 = y1 + dy * ratio;
+      return [newX2, newY2];
+    }
+
+    function drawGraph() {
+      svg.innerHTML = `
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="gray" />
+          </marker>
+        </defs>
+      `;
+      edgeElements = [];
+
+      // Draw nodes
+      nodes.forEach(n => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", n.x);
+        circle.setAttribute("cy", n.y);
+        circle.setAttribute("r", 16);
+        circle.setAttribute("class", "node");
+        svg.appendChild(circle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", n.x);
+        text.setAttribute("y", n.y + 5);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("fill", "white");
+        text.setAttribute("font-size", "14px");
+        text.textContent = n.id;
+        svg.appendChild(text);
+      });
+
+      // Draw edges with shorter lines so arrowheads are closer to nodes
+      edges.forEach(e => {
+        const n1 = nodes[e.u], n2 = nodes[e.v];
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const [shortX2, shortY2] = shortenLine(n1.x, n1.y, n2.x, n2.y, 12); // Reduced from 16 to 12
+        line.setAttribute("x1", n1.x);
+        line.setAttribute("y1", n1.y);
+        line.setAttribute("x2", shortX2);
+        line.setAttribute("y2", shortY2);
+        line.setAttribute("class", "edge");
+        svg.appendChild(line);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", (n1.x + n2.x) / 2);
+        label.setAttribute("y", (n1.y + n2.y) / 2 - 5);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("fill", "black");
+        label.setAttribute("font-size", "12px");
+        label.textContent = e.weight;
+        svg.appendChild(label);
+
+        edgeElements.push({ edge: e, line });
+      });
+    }
+
+    function createDistanceMatrix() {
+      const n = nodes.length;
+      dist = Array(n).fill(null).map(() => Array(n).fill(Infinity));
+
+      for(let i=0; i<n; i++) dist[i][i] = 0;
+      edges.forEach(({u, v, weight}) => {
+        dist[u][v] = weight;
+      });
+
+      renderMatrix();
+    }
+
+    function renderMatrix(highlightCells = []) {
+      distMatrixTable.innerHTML = "";
+      const n = dist.length;
+
+      let thead = document.createElement("thead");
+      let headerRow = document.createElement("tr");
+      headerRow.appendChild(document.createElement("th"));
+      for(let j=0; j<n; j++) {
+        let th = document.createElement("th");
+        th.textContent = j;
+        headerRow.appendChild(th);
+      }
+      thead.appendChild(headerRow);
+      distMatrixTable.appendChild(thead);
+
+      let tbody = document.createElement("tbody");
+      for(let i=0; i<n; i++) {
+        let tr = document.createElement("tr");
+        let rowHeader = document.createElement("th");
+        rowHeader.textContent = i;
+        tr.appendChild(rowHeader);
+
+        for(let j=0; j<n; j++) {
+          let td = document.createElement("td");
+          td.textContent = dist[i][j] === Infinity ? "∞" : dist[i][j];
+
+          if (highlightCells.some(([x,y]) => x === i && y === j)) {
+            td.style.backgroundColor = "#ffe599";
+          } else {
+            td.style.backgroundColor = "white";
+          }
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      distMatrixTable.appendChild(tbody);
+    }
+
+    async function floydWarshall() {
+      startBtn.disabled = true;
+      resetBtn.disabled = true;
+      errorMsg.textContent = "";
+
+      const n = nodes.length;
+
+      for (let k = 0; k < n; k++) {
+        for (let i = 0; i < n; i++) {
+          for (let j = 0; j < n; j++) {
+            highlightEdge(i, k);
+            highlightEdge(k, j);
+
+            renderMatrix([[i,j]]);
+            await sleep(600);
+
+            if (dist[i][k] !== Infinity && dist[k][j] !== Infinity && dist[i][k] + dist[k][j] < dist[i][j]) {
+              dist[i][j] = dist[i][k] + dist[k][j];
+
+              renderMatrix([[i,j]]);
+              await sleep(600);
+            }
+
+            unhighlightAllEdges();
+          }
+        }
+      }
+
+      renderMatrix();
+      startBtn.disabled = false;
+      resetBtn.disabled = false;
+    }
+
+    function highlightEdge(u,v) {
+      edgeElements.forEach(({edge,line}) => {
+        if(edge.u === u && edge.v === v) {
+          line.classList.add("highlight-edge");
+        }
+      });
+    }
+
+    function unhighlightAllEdges() {
+      edgeElements.forEach(({line}) => {
+        line.classList.remove("highlight-edge");
+      });
+    }
+
+    function reset() {
+      errorMsg.textContent = "";
+      drawGraph();
+      createDistanceMatrix();
+      startBtn.disabled = false;
+      resetBtn.disabled = true;
+    }
+
+    startBtn.addEventListener("click", async () => {
+      await floydWarshall();
+    });
+
+    resetBtn.addEventListener("click", reset);
+
+    // Initial setup
+    drawGraph();
+    createDistanceMatrix();
+  </script>
+</body>
+</html>

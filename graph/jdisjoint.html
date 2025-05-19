@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Disjoint Set (Union-Find) Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #edf0f3;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .controls {
+      margin: 10px;
+    }
+
+    input {
+      padding: 4px;
+      width: 50px;
+      margin-right: 5px;
+      -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    button {
+      padding: 4px 8px;
+      margin: 5px;
+      background: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #222;
+      background: #e0e7ff;
+      padding: 6px 10px;
+      display: inline-block;
+      border-radius: 5px;
+      min-height: 24px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    #visualizer {
+      position: relative;
+      margin: 0 auto 15px;
+      width: 410px;
+      height: 230px;
+      border: 1px solid #ccc;
+      background: #f9fbfc;
+      user-select: none;
+    }
+
+    .node {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      transition: background 0.3s ease;
+      cursor: default;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <input type="number" id="nodeX" placeholder="x" min="0" max="9" />
+    <input type="number" id="nodeY" placeholder="y" min="0" max="9" />
+    <button onclick="findNode()">Find(x)</button>
+    <button onclick="unionNodes()">Union(x, y)</button>
+    <button onclick="reset()">Reset</button>
+  </div>
+
+  <div id="message"></div>
+  <div id="visualizer"></div>
+
+  <script>
+    const n = 10;
+    let parent = Array.from({ length: n }, (_, i) => i);
+    let rank = Array(n).fill(0);
+
+    const visualizer = document.getElementById("visualizer");
+    const messageBox = document.getElementById("message");
+
+    // Adjusted positions to fit 410px width and 230px height with 32px nodes
+    // Two rows, nicely spaced horizontally and vertically
+    const positions = [
+      [20, 20], [70, 20], [120, 20], [170, 20], [220, 20],
+      [70, 120], [120, 120], [170, 120], [220, 120], [270, 120]
+    ];
+
+    function draw() {
+      visualizer.innerHTML = "";
+      const canvas = document.createElement("canvas");
+      canvas.width = visualizer.clientWidth;
+      canvas.height = visualizer.clientHeight;
+      visualizer.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
+
+      for (let i = 0; i < n; i++) {
+        const [x, y] = positions[i];
+        const div = document.createElement("div");
+        div.className = "node";
+        div.id = "node-" + i;
+        div.innerText = i;
+        div.style.left = x + "px";
+        div.style.top = y + "px";
+        visualizer.appendChild(div);
+      }
+
+      // Draw edges from each node to its parent if not root
+      for (let i = 0; i < n; i++) {
+        if (parent[i] !== i) {
+          const [x1, y1] = positions[i];
+          const [x2, y2] = positions[parent[i]];
+          ctx.beginPath();
+          ctx.moveTo(x1 + 16, y1 + 16); // center of node (32/2 =16)
+          ctx.lineTo(x2 + 16, y2 + 16);
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+    }
+
+    function find(x) {
+      if (parent[x] !== x) {
+        parent[x] = find(parent[x]);
+      }
+      return parent[x];
+    }
+
+    function showMessage(msg) {
+      messageBox.textContent = msg;
+      messageBox.style.opacity = 1;
+      setTimeout(() => {
+        messageBox.style.opacity = 0;
+      }, 3000);
+    }
+
+    function findNode() {
+      const x = parseInt(document.getElementById("nodeX").value);
+      if (isNaN(x) || x < 0 || x >= n) {
+        showMessage("Invalid x");
+        return;
+      }
+      const root = find(x);
+      showMessage(`Find(${x}) → ${root}`);
+      draw();
+    }
+
+    function unionNodes() {
+      const x = parseInt(document.getElementById("nodeX").value);
+      const y = parseInt(document.getElementById("nodeY").value);
+      if (isNaN(x) || isNaN(y) || x < 0 || x >= n || y < 0 || y >= n) {
+        showMessage("Invalid input");
+        return;
+      }
+      const rootX = find(x);
+      const rootY = find(y);
+      if (rootX === rootY) {
+        showMessage(`${x} and ${y} are already in the same set.`);
+        return;
+      }
+      if (rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+        showMessage(`Union(${x}, ${y}) → ${rootX} ← ${rootY}`);
+      } else if (rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+        showMessage(`Union(${x}, ${y}) → ${rootY} ← ${rootX}`);
+      } else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
+        showMessage(`Union(${x}, ${y}) → ${rootY} ← ${rootX} (rank ↑)`);
+      }
+      draw();
+    }
+
+    function reset() {
+  parent = Array.from({ length: n }, (_, i) => i);
+  rank = Array(n).fill(0);
+  document.getElementById("nodeX").value = "";
+  document.getElementById("nodeY").value = "";
+  showMessage("Reset successful.");
+  draw();
+}
+
+
+    draw();
+  </script>
+</body>
+</html>

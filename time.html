@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Algorithm Visualizer </title>
-<link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+    <title>Algorithm Visualizer</title>
+    <link rel="icon" type="image/x-icon" href="C:/Users/Nitya/Desktop/Project/DAA/Website/icon1.jpeg">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            
             margin: 0;
-            
             background-color: #F8F8F8;
             min-height: 100vh;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-	padding: 25px;
+            padding: 25px;
         }
-	.one {
-  background-image: url('background.jpeg'); 
-  background-position: center;
-  color: white;
-  text-align: center;
-  padding: 1px;
-  
-  font-weight: bold;
-}
+        .one {
+            background-image: url('background.jpeg');
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 1px;
+            font-weight: bold;
+        }
         h1 {
             text-align: center;
             color: white;
@@ -34,32 +33,27 @@
             font-size: 2.5em;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
-
         .code-input {
             display: flex;
             gap: 30px;
             margin-bottom: 30px;
             animation: fadeIn 0.5s ease-in;
         }
-
         #codeArea {
             width: 100%;
             height: 300px;
             padding: 20px;
             border: none;
             border-radius: 12px;
-
             font-size: 14px;
             background: #fff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
-
         #codeArea:focus {
             box-shadow: 0 6px 20px rgba(0,0,0,0.15);
             outline: none;
         }
-
         .button {
             background: linear-gradient(45deg, #4CAF50, #45a049);
             color: white;
@@ -71,12 +65,10 @@
             font-weight: 500;
             box-shadow: 0 2px 8px rgba(76,175,80,0.3);
         }
-
         .button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(76,175,80,0.4);
         }
-
         #language {
             width: 100%;
             margin-bottom: 15px;
@@ -85,14 +77,12 @@
             border: 1px solid #ddd;
             background: white;
         }
-
         .results {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             animation: slideUp 0.5s ease-out;
         }
-
         .complexity-card, .visualization {
             background: white;
             padding: 25px;
@@ -100,39 +90,32 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
         }
-
         .complexity-card:hover, .visualization:hover {
             transform: translateY(-5px);
         }
-
         h2 {
             color: #2c3e50;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #f0f2f5;
         }
-
         h3 {
             color: #34495e;
             margin: 15px 0;
         }
-
         #timeResult, #spaceResult {
             color: #4CAF50;
             font-weight: bold;
         }
-
         #complexityChart {
             width: 100%;
             height: 300px;
             border-radius: 8px;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -143,32 +126,27 @@
                 transform: translateY(0);
             }
         }
-
         .options-panel {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-
         .options-container {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-
         .language-select {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .language-select label {
             color: #34495e;
             font-weight: 500;
             font-size: 0.9em;
         }
-
         #language {
             background: linear-gradient(to right, #ffffff, #f8f9fa);
             border: 1px solid #e0e3e9;
@@ -176,11 +154,9 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-
         #language:hover {
             border-color: #4CAF50;
         }
-
         .analyze-btn {
             width: 100%;
             background: linear-gradient(45deg, #4CAF50, #45a049);
@@ -190,206 +166,167 @@
             justify-content: center;
             gap: 8px;
         }
-
         .analyze-btn:hover {
             background: linear-gradient(45deg, #45a049, #3d8b40);
         }
     </style>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 
 <div class="one">
-<h1 align="CENTER" style="font-size:280%">Code Complexity Analyzer</h1>
+    <h1 align="CENTER" style="font-size:280%">Code Complexity Analyzer</h1>
 </div>
 
 <p align="CENTER" style="font-size:120%">
-<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/home.html"> Home | </a>
-
-<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search.html"> Searching Algorithms | </a>
-<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/sort.html"> Sorting Algorithms | </a>
-<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph.html"> Graph Algorithms | </a>
-<a href="C:/Users/Nitya/Desktop/Project/DAA/Website/greedy.html"> Greedy Algorithms </a>
+    <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/home.html"> Home | </a>
+    <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/search.html"> Searching Algorithms | </a>
+    <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/sort.html"> Sorting Algorithms | </a>
+    <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/graph.html"> Graph Algorithms | </a>
+    <a href="C:/Users/Nitya/Desktop/Project/DAA/Website/greedy.html"> Greedy Algorithms </a>
 </p>
+
 <hr>
+
 <div class="container">
-
-
-        <div class="code-input">
-            <div style="flex: 2;">
-                <h3>Enter Your Code</h3>
-                <textarea id="codeArea" placeholder="Paste your code here..."></textarea>
-            </div>
-            <div style="flex: 1;" class="options-panel">
-                <h3>Options</h3>
-                <div class="options-container">
-                    <div class="language-select">
-                        <label for="language">Select Language:</label>
-                        <select id="language" class="button">
-                            <option value="javascript">JavaScript</option>
-                            <option value="python">Python</option>
-                            <option value="java">Java</option>
-                            <option value="c">C</option>
-                        </select>
-                    </div>
-                    <div class="analysis-options">
-                        <button onclick="analyzeCode()" class="button analyze-btn">
-                            <i class="fas fa-analytics"></i> Analyze Code
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <div class="code-input">
+        <div style="flex: 2;">
+            <h3>Enter Your Code</h3>
+            <textarea id="codeArea" placeholder="Paste your code here..."></textarea>
         </div>
-
-        <div class="results">
-            <div class="complexity-card">
-                <h2>Complexity Analysis</h2>
-                <div id="timeComplexity">
-                    <h3>Time Complexity: <span id="timeResult">-</span></h3>
-                    <p id="timeExplanation"></p>
+        <div style="flex: 1;" class="options-panel">
+            <h3>Options</h3>
+            <div class="options-container">
+                <div class="language-select">
+                    <label for="language">Select Language:</label>
+                    <select id="language" class="button">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="c">C</option>
+                    </select>
                 </div>
-                <div id="spaceComplexity">
-                    <h3>Space Complexity: <span id="spaceResult">-</span></h3>
-                    <p id="spaceExplanation"></p>
+                <div class="analysis-options">
+                    <button onclick="analyzeCode()" class="button analyze-btn">
+                        <i class="fas fa-analytics"></i> Analyze Code
+                    </button>
                 </div>
-            </div>
-            
-            <div class="visualization">
-                <h2>Visualization</h2>
-                <div id="complexityChart"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        function analyzeCode() {
-            const code = document.getElementById('codeArea').value;
-            const language = document.getElementById('language').value;
-            
-            const complexity = analyzeTimeComplexity(code);
-            
-            document.getElementById('timeResult').textContent = complexity;
-            document.getElementById('timeExplanation').textContent = getComplexityExplanation(complexity);
-            
-            createComplexityChart(complexity);
+    <div class="results">
+        <div class="complexity-card">
+            <h2>Complexity Analysis</h2>
+            <div id="timeComplexity">
+                <h3>Time Complexity: <span id="timeResult">-</span></h3>
+                <p id="timeExplanation"></p>
+            </div>
+            <div id="spaceComplexity">
+                <h3>Space Complexity: <span id="spaceResult">-</span></h3>
+                <p id="spaceExplanation"></p>
+            </div>
+        </div>
+        <div class="visualization">
+            <h2>Visualization</h2>
+            <div id="complexityChart"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function analyzeCode() {
+        const code = document.getElementById('codeArea').value;
+        const language = document.getElementById('language').value;
+        const complexity = analyzeTimeComplexity(code);
+        document.getElementById('timeResult').textContent = complexity;
+        document.getElementById('timeExplanation').textContent = getComplexityExplanation(complexity);
+        createComplexityChart(complexity);
+    }
+
+    function analyzeTimeComplexity(code) {
+        let complexity = 'O(1)';
+        const language = document.getElementById('language').value;
+        const lowerCode = code.toLowerCase();
+
+        if (lowerCode.includes("insertion sort") || lowerCode.match(/for\s*\(.*\)\s*{[^}]*while/)) {
+            complexity = 'O(n²)';
+        } else if (lowerCode.includes("bubble sort")) {
+            complexity = 'O(n²)';
+        } else if (lowerCode.includes("selection sort")) {
+            complexity = 'O(n²)';
+        } else if (lowerCode.includes("merge sort")) {
+            complexity = 'O(n log n)';
+        } else if (lowerCode.includes("quick sort") || lowerCode.includes("quicksort")) {
+            complexity = 'O(n log n)';
+        } else if (lowerCode.includes("sort")) {
+            complexity = 'O(n log n)';
+        } else if (code.match(/for[\s\S]*for/)) {
+            complexity = 'O(n²)';
+        } else if (code.includes('for') || code.includes('while')) {
+            complexity = 'O(n)';
         }
 
-        function analyzeTimeComplexity(code) {
-            let complexity = 'O(1)';
-            const language = document.getElementById('language').value;
-            
-            // Add C-specific patterns
-            const cPatterns = {
-                malloc: /malloc\s*\(/,
-                forLoop: /for\s*\(/,
-                whileLoop: /while\s*\(/,
-                arrayDecl: /\[\s*\d+\s*\]/,
-                pointer: /\*/,
-                qsort: /qsort\s*\(/
-            };
+        document.getElementById('spaceResult').textContent = estimateSpaceComplexity(code, language);
+        return complexity;
+    }
 
-            if (language === 'c') {
-                // Check for C-specific patterns
-                if (code.match(cPatterns.qsort)) {
-                    complexity = 'O(n log n)';
-                } else if (code.match(cPatterns.forLoop)) {
-                    if (code.match(/for[\s\S]*for/)) {
-                        complexity = 'O(n²)';
-                    } else {
-                        complexity = 'O(n)';
-                    }
-                } else if (code.match(cPatterns.whileLoop)) {
-                    complexity = 'O(n)';
-                }
-            } else {
-                // Existing analysis for other languages
-                if (code.includes('while') || code.includes('for')) {
-                    if (code.includes('sort')) {
-                        complexity = 'O(n log n)';
-                    } else if (code.match(/for.*for|while.*while/)) {
-                        complexity = 'O(n²)';
-                    } else {
-                        complexity = 'O(n)';
-                    }
-                }
-            }
+    function getComplexityExplanation(complexity) {
+        const explanations = {
+            'O(1)': 'Constant time - the operation takes the same time regardless of input size.',
+            'O(n)': 'Linear time - the operation time grows linearly with input size.',
+            'O(n²)': 'Quadratic time - the operation time grows quadratically with input size.',
+            'O(n log n)': 'Linearithmic time - common in efficient sorting algorithms.'
+        };
+        return explanations[complexity] || '';
+    }
 
-            // Update space complexity analysis for C
-            document.getElementById('spaceResult').textContent = estimateSpaceComplexity(code, language);
-            return complexity;
+    function createComplexityChart(complexity) {
+        const n = Array.from({length: 10}, (_, i) => i + 1);
+        let y;
+
+        switch(complexity) {
+            case 'O(1)': y = n.map(() => 1); break;
+            case 'O(n)': y = n.map(x => x); break;
+            case 'O(n²)': y = n.map(x => x * x); break;
+            case 'O(n log n)': y = n.map(x => x * Math.log2(x)); break;
+            default: y = n;
         }
 
-        function getComplexityExplanation(complexity) {
-            const explanations = {
-                'O(1)': 'Constant time - the operation takes the same time regardless of input size.',
-                'O(n)': 'Linear time - the operation time grows linearly with input size.',
-                'O(n²)': 'Quadratic time - the operation time grows quadratically with input size.',
-                'O(n log n)': 'Linearithmic time - common in efficient sorting algorithms.'
-            };
-            return explanations[complexity] || '';
-        }
+        const trace = {
+            x: n,
+            y: y,
+            mode: 'lines+markers',
+            name: complexity
+        };
 
-        function createComplexityChart(complexity) {
-            const n = Array.from({length: 10}, (_, i) => i + 1);
-            let y;
-            
-            switch(complexity) {
-                case 'O(1)':
-                    y = n.map(() => 1);
-                    break;
-                case 'O(n)':
-                    y = n.map(x => x);
-                    break;
-                case 'O(n²)':
-                    y = n.map(x => x * x);
-                    break;
-                case 'O(n log n)':
-                    y = n.map(x => x * Math.log2(x));
-                    break;
-                default:
-                    y = n;
-            }
+        const layout = {
+            title: 'Time Complexity Growth',
+            xaxis: { title: 'Input Size (n)' },
+            yaxis: { title: 'Time' }
+        };
 
-            const trace = {
-                x: n,
-                y: y,
-                mode: 'lines+markers',
-                name: complexity
-            };
+        Plotly.newPlot('complexityChart', [trace], layout);
+    }
 
-            const layout = {
-                title: 'Time Complexity Growth',
-                xaxis: { title: 'Input Size (n)' },
-                yaxis: { title: 'Time' }
-            };
-
-            Plotly.newPlot('complexityChart', [trace], layout);
-        }
-
-        function estimateSpaceComplexity(code, language) {
-            if (language === 'c') {
-                if (code.match(/malloc\s*\(/)) {
-                    if (code.match(/for[\s\S]*for/)) {
-                        return 'O(n²)';
-                    }
-                    return 'O(n)';
-                }
-                if (code.match(/\[\s*\d+\s*\]/)) {
-                    return 'O(n)';
-                }
-                return 'O(1)';
-            }
-            
-            // Existing space complexity analysis
-            if (code.includes('new Array') || code.includes('[]')) {
-                if (code.match(/for.*for|while.*while/)) {
-                    return 'O(n²)';
-                }
+    function estimateSpaceComplexity(code, language) {
+        const lower = code.toLowerCase();
+        if (language === 'c') {
+            if (lower.match(/malloc\s*\(/)) {
+                if (code.match(/for[\s\S]*for/)) return 'O(n²)';
                 return 'O(n)';
             }
+            if (code.match(/\[\s*\d+\s*\]/)) return 'O(n)';
             return 'O(1)';
         }
-    </script>
+
+        if (lower.includes('new array') || lower.includes('[]')) {
+            if (code.match(/for.*for|while.*while/)) return 'O(n²)';
+            return 'O(n)';
+        }
+
+        return 'O(1)';
+    }
+</script>
+
 </body>
 </html>
